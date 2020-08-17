@@ -1,6 +1,6 @@
 ---
 title: "ETC5521 Assignment 1"
-subtitle: "Your title"
+subtitle: "Spotify Music Exploratory Data Analysis"
 team: wallaby
 author:
   - Chengzhi Ye
@@ -10,6 +10,18 @@ output:
   html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(readr)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(spotifyr)
+library(skimr)
+```
+
+
 [This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
 
 
@@ -18,6 +30,27 @@ output:
 [FILL] Give the bigger picture of the data, and inspire the reader to learn more about the problem by reading your analysis. 
 
 # Data description
+```{r read-data, message=FALSE, cache=TRUE}
+spotify_songs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv')
+```
+## Data Source
+
+The data of this report is part of the [tidytuesday chanllenge](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-21/readme.md), which comes from [Spotify](https://www.spotify.com/) via the  [spotifyr](https://www.rdocumentation.org/packages/spotifyr/versions/2.1.1) package.
+
+
+## Data Structure
+
+The **variables** in this dataset are `r names(spotify_songs)`, time frame of collection is from 1957-01-01 to 2020-01-29.
+
+**Data collection methods:** Spotifyr is an R wrapper for pulling track audio features and other information from Spotify’s Web API in bulk. By automatically batching API requests, it allows you to enter an artist’s name and retrieve their entire discography in seconds, along with Spotify’s audio features and track/album popularity metrics. You can also pull song and playlist information for a given Spotify User.
+
+Here is a brief summary of the **data structure**:
+
+```{r data-structure}
+skimr::skim(spotify_songs) 
+```
+
+
 
 # Analysis and findings
 
