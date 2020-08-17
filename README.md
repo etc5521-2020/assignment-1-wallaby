@@ -1,10 +1,10 @@
 # ETC5521 Assignment 1 
 
-Team name: [FILL]
+Team name: wallaby
 
 Team members:
 
-* [FILL]
+* Yan Ma
 * [FILL]
 
 # Steps
