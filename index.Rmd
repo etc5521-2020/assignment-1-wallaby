@@ -1,10 +1,10 @@
 ---
 title: "ETC5521 Assignment 1"
 subtitle: "Your title"
-team: [FILL]
+team: wallaby
 author:
-  - [FILL]
-  - [FILL]
+  - Chengzhi Ye
+  - Yan Ma
 date: "`r Sys.Date()`"
 output: 
   html_document

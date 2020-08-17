@@ -4,8 +4,8 @@ Team name: wallaby
 
 Team members:
 
+* Chengzhi Ye
 * Yan Ma
-* [FILL]
 
 # Steps
 
