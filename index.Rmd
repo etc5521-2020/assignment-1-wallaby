@@ -30,9 +30,13 @@ library(skimr)
 [FILL] Give the bigger picture of the data, and inspire the reader to learn more about the problem by reading your analysis. 
 
 # Data description
-```{r read-data, message=FALSE, cache=TRUE}
+```{r read-data, eval=FALSE}
 spotify_songs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv') %>% 
   write.csv("spotify_songs.csv")
+```
+
+```{r read-csv}
+spotify_song <- read.csv(here::here("spotify_songs.csv"))
 ```
 ## Data Source
 
@@ -48,7 +52,7 @@ The **variables** in this dataset are `r names(spotify_songs)`, time frame of co
 Here is a brief summary of the **data structure**:
 
 ```{r data-structure}
-skimr::skim(spotify_songs) 
+skimr::skim(spotify_song) 
 ```
 
 
@@ -57,4 +61,33 @@ skimr::skim(spotify_songs)
 
 [FILL] Should include at least one plot or numerical summary for each of your questions, that helps the reader arrive at an answer. You should also write paragraphs describing the methods, summaries and findings. 
 
+## Potential analysis questions
+
+
+1. Characteristics of each type of song: (col 13:24)
+  Summarise by type (genre) of music: (playlist_name, playlist_genre, playlist_subgenre)
+
+2. What type of songs are popular?
+  y ~ x(features)
+
+3. Each type of song was populated in what time period? (track_album_release_date)
+
+4. Analyse my favorate artist, eg: Maroon 5.
+
+
+## Limitation
+
+1. popularity: too many zeros & how to calculate it
+
+
+```{r}
+spotify_song %>% 
+  filter(track_artist == "Maroon 5")
+```
+
+
 # References
+
+
+
+
