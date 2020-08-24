@@ -27,7 +27,17 @@ library(skimr)
 
 # Introduction and motivation
 
-[FILL] Give the bigger picture of the data, and inspire the reader to learn more about the problem by reading your analysis. 
+Music, in a broad sense, is any art composed of sound, but it can express people's thoughts and thoughts, which implies the author's life experience, thoughts and feelings, and can bring people the enjoyment of beauty and the expression of human feelings. At the same time, music is also a form of social behavior, through which people can exchange feelings and life experiences. 
+
+In ancient times, when the court held a banquet, or some talented people visited the landscape, they would play music to boost the fun. But in modern times, because the threshold of classical music is too high, and its development has gradually reached the extreme, it has become a very small group, while pop music (the general name of popular songs, including Rock, R&B, Latin, etc)  is gradually showing its own characteristics. Therefore, modern songs are quietly occupying the top position in people's hearts because of their outstanding performance in conveying emotion and life experience. Listening to pop music has also become the most common behavior in everyone's daily entertainment.
+
+Nowadays, music plays an important role in people's life. It plays an indispensable role in helping people manage and improve their quality of life. As fans of music, we not only enjoy music, but also wonder how music strikes people's hearts with simple tones, rhythms, timbres and words. How high is the position of genre in music performance? How much influence does the genre, or the various attributes of songs, have on music? Where do we like music? Whether it makes us dance or sing unconsciously, or does it convey our emotions and implicate our thoughts? All these are the motivations that we continue to study. But now listening software has sprung up like mushrooms. After careful consideration, our group decided to select Spotify as the research object. First of all, let me introduce Spotify.
+
+Spotify is a legitimate streaming music service platform, which has been supported by Warner Music, Sony, EMI and other major record companies around the world. Now it has more than 60 million users, and it is the world's leading large-scale online streaming music playing platform.
+
+Because Spotify contains a large number of users' data, four users who are very interested in it, Charlie Thompson, Josiah parry, Donal Phipps, and Tom Wolff decided to make it easier for everyone to know their own preferences or the mainstream of most people's listening to songs through spotify's API, thus creating Spotifyr package. Also, it is the source of our group assignment data.
+
+In addition to Spotify package, our data is also mixed with blog post data created by Kaylin Pavlik. Six main categories (EDM, Latin, pop, R&B, rap, rock) are used to classify 5000 songs. The combination of the two data has a great effect on the study of the popularity of pop music.
 
 # Data description
 ```{r read-data, eval=FALSE}
@@ -47,7 +57,7 @@ The data of this report is part of the [tidytuesday chanllenge](https://github.c
 
 The **variables** in this dataset are `r names(spotify_songs)`, time frame of collection is from 1957-01-01 to 2020-01-29.
 
-**Data collection methods:** Spotifyr is an R wrapper for pulling track audio features and other information from Spotify’s Web API in bulk. By automatically batching API requests, it allows you to enter an artist’s name and retrieve their entire discography in seconds, along with Spotify’s audio features and track/album popularity metrics. You can also pull song and playlist information for a given Spotify User.
+**Data collection methods:** Spotifyr package can extract track audio characteristics or other related information from Spotify's Web API in batches. For example, if you want to search for an artist, just type in his name, and all his albums or songs will be listed in seconds. Meanwhile, Spotifyr package will record the popularity metrics of all tracks or albums, so it is easy to understand the correlation between music popularity and music characteristics.
 
 Here is a brief summary of the **data structure**:
 
