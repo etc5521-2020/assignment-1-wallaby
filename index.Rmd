@@ -11,7 +11,8 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(devtools)
 library(readr)
 library(tidyverse)
 library(dplyr)
@@ -19,7 +20,18 @@ library(lubridate)
 library(ggplot2)
 library(spotifyr)
 library(skimr)
+library(knitr)
+library(kableExtra)
+library(ggjoy)
+library(forcats)
+library(broom)
+library(gridExtra)
+library(genius)
+library(tidytext)
+library(textdata)
 ```
+
+<center><img src="https://cdn.musebycl.io/styles/large_wide/s3/2019-04/spotify-music-for-every-mood-hed-2019.jpg?itok=nT0AgVbz"></center>
 
 
 [This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
@@ -31,12 +43,12 @@ library(skimr)
 
 # Data description
 ```{r read-data, eval=FALSE}
-spotify_songs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv') %>% 
+readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv') %>% 
   write.csv("spotify_songs.csv")
 ```
 
 ```{r read-csv}
-spotify_song <- read.csv(here::here("spotify_songs.csv"))
+spotify_songs <- read.csv(here::here("spotify_songs.csv"))
 ```
 ## Data Source
 
@@ -52,8 +64,11 @@ The **variables** in this dataset are `r names(spotify_songs)`, time frame of co
 Here is a brief summary of the **data structure**:
 
 ```{r data-structure}
-skimr::skim(spotify_song) 
+skimr::skim(spotify_songs)
 ```
+
+
+
 
 
 
@@ -61,18 +76,211 @@ skimr::skim(spotify_song)
 
 [FILL] Should include at least one plot or numerical summary for each of your questions, that helps the reader arrive at an answer. You should also write paragraphs describing the methods, summaries and findings. 
 
-## Potential analysis questions
 
+### 1. Characteristics of each genre
 
-1. Characteristics of each type of song: (col 13:24)
-  Summarise by type (genre) of music: (playlist_name, playlist_genre, playlist_subgenre)
+```{r genres-summary}
+spotify_songs %>% 
+  count(playlist_genre, sort = TRUE) %>%
+  kable(caption = "Genres in the dataset", booktabs = T) %>% 
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+```{r features-genre}
+feature_names <- names(spotify_songs)[13:24]
+
+spotify_songs %>%
+  select(c("playlist_genre", feature_names)) %>%
+  pivot_longer(cols = feature_names) %>%
+  ggplot(aes(x = value)) +
+  geom_density(aes(color = playlist_genre), alpha = 0.5) +
+  facet_wrap(~name, ncol = 3, scales = 'free') +
+  labs(title = "Spotify Audio Feature Density - by Genre",
+       x = "", y = "density") +
+  theme(axis.text.y = element_blank(), 
+        axis.ticks = element_blank()) + 
+  scale_color_brewer(palette = "Accent")
+```
+
+```{r joyful-genre}
+joyful_genre <- spotify_songs %>% 
+  group_by(playlist_genre) %>% 
+  summarise(joyful = mean(valence)) %>% 
+  arrange(desc(joyful)) 
+joyful_genre$playlist_genre <- factor(joyful_genre$playlist_genre) %>% 
+  fct_reorder(joyful_genre$joyful)
+joyful_genre %>% 
+  ggplot(aes(x = playlist_genre, y = joyful, fill = playlist_genre)) + 
+  geom_col() + 
+  coord_flip() + 
+  xlab("") + 
+  ggtitle("Average joyful (valence) ranking by genre")
+```
+
 
 2. What type of songs are popular?
-  y ~ x(features)
 
-3. Each type of song was populated in what time period? (track_album_release_date)
+**What features make a song popular?**
 
-4. Analyse my favorate artist, eg: Maroon 5.
+```{r features-popularity}
+popular_songs <- spotify_songs %>% 
+  filter(track_popularity > 50)
+
+fit1 <- lm((track_popularity * 10) ~ acousticness + danceability + duration_ms + 
+             energy + instrumentalness + key + liveness + loudness + 
+             mode + speechiness + tempo + valence, data = popular_songs)
+
+result <- as.data.frame(tidy(fit1)) %>% 
+  filter(p.value < 0.05)
+
+kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T) %>% 
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+```{r popularity-against-features}
+dance_popular <- spotify_songs %>% 
+  ggplot() + 
+  geom_point(aes(x = danceability, y = track_popularity), color = "#E69F00", alpha = 0.05)
+
+loudness_popular <- spotify_songs %>% 
+  ggplot() + 
+  geom_point(aes(x = loudness, y = track_popularity), color = "#009E73", alpha = 0.05)
+
+valence_popular <- spotify_songs %>% 
+  ggplot() + 
+  geom_point(aes(x = valence, y = track_popularity), color = "#CC79A7", alpha = 0.05)
+
+energy_popular <- spotify_songs %>% 
+  ggplot() + 
+  geom_point(aes(x = energy, y = track_popularity), color = "#56B4E9", alpha = 0.05)
+
+instrumentalness_popular <- spotify_songs %>% 
+  ggplot() + 
+  geom_point(aes(x = instrumentalness, y = track_popularity), color = "#0072B2", alpha = 0.05)
+
+liveness_popular <- spotify_songs %>% 
+  ggplot() + 
+  geom_point(aes(x = liveness, y = track_popularity), color = "#D55E00", alpha = 0.05)
+
+speechiness_popular <- spotify_songs %>% 
+  ggplot() + 
+  geom_point(aes(x = speechiness, y = track_popularity), color = "#C4961A", alpha = 0.05)
+
+duration_popular <- spotify_songs %>% 
+  ggplot() + 
+  geom_point(aes(x = duration_ms, y = track_popularity), color = "#C3D7A4", alpha = 0.05)
+
+grid.arrange(dance_popular, loudness_popular, valence_popular, 
+             energy_popular, instrumentalness_popular, liveness_popular, 
+             speechiness_popular, duration_popular, ncol = 3)
+```
+
+
+
+
+3. Each type of songs was populated in what time period?
+
+```{r time-popular}
+spotify_songs <- spotify_songs %>% 
+  mutate(year = substr(track_album_release_date, 1, 4))
+
+spotify_songs <- spotify_songs %>% 
+  mutate(decade = round(as.numeric(year) - 4.5, -1))
+
+time_popular <- spotify_songs %>% 
+  select(c("playlist_genre", "decade", "track_popularity")) %>%
+  pivot_longer(cols = playlist_genre) %>% 
+  group_by(as.character(value), as.character(decade)) %>% 
+  summarise(mean_popularity = mean(track_popularity)) 
+
+rename(time_popular, genre = `as.character(value)`, 
+       decade = `as.character(decade)`) -> time_popular
+
+time_popular %>% 
+  ggplot() +
+  geom_col(aes(x = decade, y = mean_popularity, 
+               fill = decade), alpha = 0.5) + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + 
+  facet_wrap(~genre)
+
+```
+
+
+4. Analyse my favorate artists and albums using "spotifyr" package.
+
+
+```{r}
+Sys.setenv(SPOTIFY_CLIENT_ID = "d11442c742ef4d30bc6ac5f7d16ad9a3")
+Sys.setenv(SPOTIFY_CLIENT_SECRET = "29bf6f95fe894329ba9204cd9e72b68e")
+access_token <- get_spotify_access_token()
+```
+
+```{r my-favorate-tracks}
+get_my_top_artists_or_tracks(type = 'tracks', time_range = 'long_term', limit = 5) %>% 
+  select(name, album.release_date) %>% 
+  rowwise %>% 
+  kable(caption = "My favorate tracks top 5", booktabs = T) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+
+
+
+```{r my-artists-popular}
+my_recent_50 <- get_my_top_artists_or_tracks(type = 'artists', time_range = 'long_term', limit = 50) %>% 
+  rowwise %>% 
+  mutate(genres = paste(genres, collapse = ', ')) %>% 
+  ungroup
+my_artists <- as_tibble(my_recent_50) 
+my_artists %>% 
+  select(name, popularity, genres) %>% 
+  arrange(desc(popularity)) %>% 
+  head(5) %>% 
+  kable(caption = "The most popular artists in my playlist", booktabs = T) %>% 
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+
+
+```{r coldplay-album}
+coldplay <- get_artist_audio_features("coldplay")
+
+albums_valence <- coldplay %>% 
+  group_by(album_name) %>% 
+  filter(!album_name %in% c("Ghost Stories Live 2014", "Live in Buenos Aires", "Love in Tokyo", "A Head Full of Dreams Tour Edition")) %>% 
+  summarise(mean_valence = mean(valence))
+
+albums_valence <- rename(albums_valence, valence = mean_valence)
+
+albums_valence %>% 
+  arrange(desc(valence)) %>% 
+  kable(digits = 2, caption = "Joyfullness of Coldplay's albums", booktabs = T) %>% 
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+```{r coldplay-valence}
+coldplay %>% 
+  group_by(album_name) %>% 
+  filter(!album_name %in% c("Ghost Stories Live 2014", "Live in Buenos Aires", "Love in Tokyo", "A Head Full of Dreams Tour Edition")) %>%
+  ggplot(aes(x = valence, y = album_name, fill = ..x..)) + 
+  geom_density_ridges_gradient() + 
+  theme(legend.position = "none")
+```
+
+
+
+```{r my favorate-album-lyrics}
+rush <- genius_album(artist = "coldplay", album = "a rush of blood to the head")
+
+rush_afinn <- rush %>% 
+  unnest_tokens(word, lyric) %>% 
+  anti_join(stop_words) %>% 
+  inner_join(get_sentiments("afinn"))
+```
+
+
 
 
 ## Limitation
@@ -80,13 +288,14 @@ skimr::skim(spotify_song)
 1. popularity: too many zeros & how to calculate it
 
 
-```{r}
-spotify_song %>% 
-  filter(track_artist == "Maroon 5")
-```
+
 
 
 # References
+
+
+
+
 
 
 
