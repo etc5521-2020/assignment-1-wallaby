@@ -48,6 +48,8 @@ spotify_songs <- readr::read_csv('https://raw.githubusercontent.com/rfordatascie
 ```{r read-csv}
 spotify_song <- read.csv(here::here("spotify_songs.csv"))
 ```
+         
+
 ## Data Source
 
 The data of this report is part of the [tidytuesday chanllenge](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-21/readme.md), which comes from [Spotify](https://www.spotify.com/) via the  [spotifyr](https://www.rdocumentation.org/packages/spotifyr/versions/2.1.1) package.
@@ -57,14 +59,16 @@ The data of this report is part of the [tidytuesday chanllenge](https://github.c
 
 The **variables** in this dataset are `r names(spotify_songs)`, time frame of collection is from 1957-01-01 to 2020-01-29.
 
-**Data collection methods:** Spotifyr package can extract track audio characteristics or other related information from Spotify's Web API in batches. For example, if you want to search for an artist, just type in his name, and all his albums or songs will be listed in seconds. Meanwhile, Spotifyr package will record the popularity metrics of all tracks or albums, so it is easy to understand the correlation between music popularity and music characteristics.
+**Data collection methods:** Spotifyr package can extract track audio characteristics or other related information from Spotify's Web API in batches. For example, if you want to search for an artist, just type in his name, and all his albums or songs will be listed in seconds. Meanwhile, Spotifyr package will record the popularity metrics of all tracks or albums, so it is easy to understand the correlation between music popularity and music characteristics. Then, Jon Harmon and Neal Grantham extracted the Spotifr package and added the content of Kaylin Pavlik's recent blogpost to divide the genre of nearly 5000 songs, thus generating the Tidytuesdayr package we need for this assignment.
+
+We chose music works created by artists that can be found on Spotify from January 1, 1957 to January 29, 2020.
 
 Here is a brief summary of the **data structure**:
 
 ```{r data-structure}
 skimr::skim(spotify_song) 
 ```
-
+The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables of the dataset include "track_id", "track_name", "track_artist", "track_popularity", "track_album_id", "track_album_name", "track_album_release_date", "playlist_name", "playlist_id", "playlist_genre"  "playlist_subgenre", "danceability", "energy", "key", "loudness", "mode", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo" and "duration_ms".     
 
 
 # Analysis and findings
@@ -73,6 +77,9 @@ skimr::skim(spotify_song)
 
 ## Potential analysis questions
 
+Research Question:
+
+Qusetion 2, 3, 4:
 
 1. Characteristics of each type of song: (col 13:24)
   Summarise by type (genre) of music: (playlist_name, playlist_genre, playlist_subgenre)
