@@ -76,6 +76,11 @@ interactive table & bar_plot (top20) & polar plot
 
 ### Analyse our favorate artist
 
+In this part, we want to take one artist for example to do some detailed exploratory analysis using the "spotifyr" package. Here we choose the Coldplay, our favorate artist. 
+
+First, we loaded all the albums of Coldplay available on spotify and droped the duplicate ones (some live tour albums are duplicate with the existed ones). We calculated the average valence of each album. The results are shown in the following table. According to [the spotify tracks documentation](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/), _The valence variable is measured from 0.0 to 1.0, describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry)._
+The highest valence of these albums is 0.3, and the lowest valence is 0.18, which means the songs of Coldplay usually sounds more negative than positive for the audience.
+
 ```{r}
 Sys.setenv(SPOTIFY_CLIENT_ID = "d11442c742ef4d30bc6ac5f7d16ad9a3")
 Sys.setenv(SPOTIFY_CLIENT_SECRET = "29bf6f95fe894329ba9204cd9e72b68e")
@@ -98,14 +103,22 @@ albums_valence %>%
   kable_styling(latex_options = c("striped", "hold_position"))
 ```
 
+
+Second, we make a density plot to show the ranges and densities of valence of each album. From the following figure, we can find that "Everyday Life" has the widest range of valence, that is to say, this album contains abundant emotions. Meanwhile, "A Rush of Blood to the Head" has a narrow range of valence, and the valence desity centered at the area with lower valence values. It's probably that the audience would feel negative emotions like sad, depressed and angry when they listening this album. This finding surprised us because the "A Rush of Blood to the Head" is the second best album in ["The Coldplay Albums Ranked"](The Coldplay Albums Ranked). So we decided to look more in depth next.
+
 ```{r coldplay-valence}
 coldplay %>% 
   group_by(album_name) %>% 
   filter(!album_name %in% c("Ghost Stories Live 2014", "Live in Buenos Aires", "Love in Tokyo", "A Head Full of Dreams Tour Edition")) %>% # remove the duplicate ones
   ggplot(aes(x = valence, y = album_name, fill = ..x..)) + 
   geom_density_ridges_gradient() + 
-  theme(legend.position = "none")
+  theme(legend.position = "none") + 
+  ggtitle("The valence density of Coldplay's albums")
 ```
+
+Lastly, we analysed the sentiment of this album to see whether the valence of an album is associated with the lyrics. The average sentiment value of this album is -0.47 by the "afinn" lexicon. And we also analysed the sentiment of lyrics using the "bing" lexicon. The following table shows the most frequent words and their sentiment in this album. In addition, the figure below shows more intuitively the frequency of words which appears more than once. We can easily find that the negative words appear more than the positive ones.
+
+As a result, we can say for sure that, both in terms of sound and lyrics, this album conveyed negative emotions. But this dosen't affect that people think "A Rush of Blood to the Head" is one of the best albums of the Coldplay. It can be seen that the audience's love for a album is not entirely determined by the album's positiveness. 
 
 ```{r my favorate-album-lyrics, cache=TRUE}
 rush <- genius_album(artist = "coldplay", album = "a rush of blood to the head")
@@ -122,15 +135,6 @@ rush_bing %>%
   kable_styling(latex_options = c("striped", "hold_position"))
 ```
 
-```{r sentiment-value}
-rush_afinn <- rush %>% 
-  unnest_tokens(word, lyric) %>% 
-  anti_join(stop_words) %>% 
-  inner_join(get_sentiments("afinn")) 
-
-rush_sentiment_value <- round(mean(rush_afinn$value), digits = 2)
-```
-
 ```{r sentiment-plot}
 rush_bing %>% 
   count(word, sentiment, sort = TRUE) %>% 
@@ -143,8 +147,18 @@ rush_bing %>%
   ggtitle("sentiment of the album 'A rush of blood to the head'")
 ```
 
+```{r sentiment-value}
+rush_afinn <- rush %>% 
+  unnest_tokens(word, lyric) %>% 
+  anti_join(stop_words) %>% 
+  inner_join(get_sentiments("afinn")) 
+
+rush_sentiment_value <- round(mean(rush_afinn$value), digits = 2)
+```
 
 ### Characteristics of each genre(?)
+
+The table below shows the ditribution of each genre in this dataset. The most frequently appeared genre is "edm", while the genre "rock" appeared least.
 
 ```{r genres-summary}
 spotify_songs %>% 
@@ -154,6 +168,13 @@ spotify_songs %>%
 ```
 
 ### Each type of songs was populated in what time period?
+
+The following figure shows the average popularity of songs released in different time. To show the result clearly and for convenience of comparision, we devided the result for each genre. 
+(1) The edm music has been popular since the 1970s, and the popularities of edm music released in the past 50 years are 40 or even less. This means the edm music is not the mainstream music type nowadays. 
+(2) The latin and pop music have been popular since the 1960s. The 1970s was the golden time for the latin songs, while the 1960s and 1970s were the golden time for the pop music. These old songs are still popular now. 
+(3) The r&b music went through ups and downs. The songs released from the 1980s to the 2000s are less popular than others. 
+(4) The rap music has been popular since the 1960s, and the oldest rap music is still the most popular ones. And the songs released in the 2000s have the lowest popularity now. 
+(5) The popularitise of rock music released in different time period are quite stable. While the ones released from the 1960s to the 1990s are more popular than the others.
 
 ```{r time-popular}
 spotify_songs <- spotify_songs %>% 
@@ -181,8 +202,34 @@ time_popular %>%
   facet_wrap(~genre)
 
 ```
+
 ### Features analysis
 
+In this part, we analysed the audio features of all the songs in our dataset. The figure below shows how these features like in different genres. Here's a simple explaination of these features:
+
+- acousticness: A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 
+
+- danceablity: Danceability describes how suitable a track is for dancing. A value of 0.0 is least danceable and 1.0 is most danceable.
+
+- duration_ms: The duration of the track in milliseconds.
+
+- energy: Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy.
+
+- instrumentalness: Predicts whether a track contains no vocals. 
+
+- key: The key the track is in. 
+
+- liveness: Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live.
+
+- loudness: The overall loudness of a track in decibels (dB).
+
+- mode: Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.
+
+- speechness: Speechiness detects the presence of spoken words in a track. 
+
+- tempo: The overall estimated tempo of a track in beats per minute (BPM). 
+
+- valence: A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
 
 ```{r features-genre}
 feature_names <- names(spotify_songs)[13:24]
@@ -208,6 +255,8 @@ spotify_songs %>%
 
 ### Features and popularity(?)
 
+Then we want to explore whether these audio features contribute to a higher popularity using a linear regression model. The following table shows all the audio features with a p-value less than 0.05. We can find that danceability contributes most to a higher popularity, and loudness also has a positive relationship with popularity.
+
 ```{r features-popularity}
 popular_songs <- spotify_songs %>% 
   filter(track_popularity > 50)
@@ -223,6 +272,8 @@ kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T) %>%
   kable_styling(latex_options = c("striped", "hold_position"))
 ```
 
+Then we ploted each audio feature of the songs and the popularity in the following figure. It shows that liveness has a negative relationship with popularity, with is the same with our linear model. And we can't find any relationship between valence and popularity, this is consistent with our linear model and sentiment analysis.
+
 ```{r popularity-against-features}
 dance_popular <- spotify_songs %>% 
   ggplot() + 
@@ -231,7 +282,7 @@ dance_popular <- spotify_songs %>%
 loudness_popular <- spotify_songs %>% 
   ggplot() + 
   geom_point(aes(x = loudness, y = track_popularity), color = "#009E73", alpha = 0.05) + 
-  xlim(-30:0)
+  xlim(-30, 0)
 
 valence_popular <- spotify_songs %>% 
   ggplot() + 
