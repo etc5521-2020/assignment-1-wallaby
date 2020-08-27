@@ -16,6 +16,8 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 library(devtools)
 library(readr)
 library(tidyverse)
+library(dplyr)
+library(lubridate)
 library(ggplot2)
 library(skimr)
 library(knitr)
@@ -29,6 +31,8 @@ library(textdata)
 library(DT)
 library(corrplot)
 library(ggthemes)
+library(spotifyr)
+library(ggridges)
 ```
 
 <center><img src="https://cdn.musebycl.io/styles/large_wide/s3/2019-04/spotify-music-for-every-mood-hed-2019.jpg?itok=nT0AgVbz"></center>
@@ -338,7 +342,7 @@ fit1 <- lm((track_popularity * 10) ~ acousticness + danceability + duration_ms +
              energy + instrumentalness + key + liveness + loudness + 
              mode + speechiness + tempo + valence, data = popular_songs)
 
-result <- as.data.frame(tidy(fit1)) %>% 
+result <- as.data.frame(broom::tidy(fit1)) %>% 
   filter(p.value < 0.05)
 
 kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T) %>% 
@@ -474,7 +478,7 @@ num <- corrplot(corr, method = "number", type="lower")
 
 
 
-## Limitation
+# Limitation
 
 1. popularity: too many zeros & how to calculate it
 
