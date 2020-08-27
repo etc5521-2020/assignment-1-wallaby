@@ -52,14 +52,19 @@ Spotify is a legitimate streaming music service platform, which has been support
 Because Spotify contains a large number of users' data, four users who are very interested in it, Charlie Thompson, Josiah parry, Donal Phipps, and Tom Wolff decided to make it easier for everyone to know their own preferences or the mainstream of most people's listening to songs through spotify's API, thus creating Spotifyr package. Also, it is the source of our group assignment data.
 
 In addition to Spotify package, our data is also mixed with blog post data created by Kaylin Pavlik. Six main categories (EDM, Latin, pop, R&B, rap, rock) are used to classify 5000 songs. The combination of the two data has a great effect on the study of the popularity of pop music. 
+
 ## Analysis questions
 
 By doing this exploratory data analysis, we want to konw: 
 
 Main Question: What audio features are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
+
 Sub Questions: 
+
 1. Since 1957, what are the audio features of those top artists who make the most music artworks?
-2. 
+
+2. Explore our favorate artist - Coldplay's works, e.g. how about the musical positiveness conveyed by their albums?
+
 3. There are plenty of modern music genres nowadays, What unique style or charm can stand out and become the first choice of people?
 
 # Data description
@@ -121,7 +126,7 @@ datatable(datatable)
 
 Similarly, this is a plot of artists with most songs showed in the bar plot. Our group decided to use two different forms to express, one is through the comparison of words(using datatable), the other is through the observation of intuitive figure. This will help to deepen our impression of the top 20 singers and have an intuitive understanding of the gap between them.
 
-```{r artists, fig.cap="Top 20 Artists who wrote the most songs from 1941 to 2020", fig.align='center', fig.height=3.5}
+```{r artists, fig.cap="Top 20 Artists who wrote the most songs from 1941 to 2020", fig.align='center', fig.height=4}
 new_data1 %>% 
   count(track_artist) %>% 
   arrange(-n) %>% 
@@ -140,6 +145,7 @@ Next is a radar plot. Our group filters artists whose popularity is greater than
 First, we can see that Maroon 5, the Weekend, Roddy Rich and KAROL G are overwhelming in popularity. Because the size of each pie chart means the level of popularity. Also, it is clear that popular singers usually create many genres of songs, which are not limited to a single genre. Next, from the perspective of different artists' music artworks style, there are filled with the great differences. 
 
 For example, from the brightness of colors, we can see that the Energy brought by Maroon 5 and Billie Eilish's music artworks is not too high. This is not to elaborate their shortcomings, but to elaborate their style, which is lyrical and soft. If judging from the color of each fan-shaped boundary line, it can be concluded that Roddy Rich and Trevor Daniel's works have the highest value of danceability, after the comparison of each artworks' average tempo, rhythm stability, beat strength, and overall regularity.
+
 
 ```{r radarplot, fig.cap="Characteristics of top singers", fig.align='center', fig.height=5}
 Artist_attributes <- new_data1 %>%
@@ -172,7 +178,8 @@ Sys.setenv(SPOTIFY_CLIENT_SECRET = "29bf6f95fe894329ba9204cd9e72b68e")
 access_token <- get_spotify_access_token()
 ```
 
-```{r coldplay-album, tab.align='center', tab.height=3.5}
+
+```{r coldplay-album}
 coldplay <- get_artist_audio_features("coldplay")
 
 albums_valence <- coldplay %>% 
@@ -184,8 +191,9 @@ albums_valence <- rename(albums_valence, valence = mean_valence)
 
 albums_valence %>% 
   arrange(desc(valence)) %>% 
-  kable(digits = 2, caption = "Joyfullness of Coldplay's albums", booktabs = T) %>% 
-  kable_styling(latex_options = c("striped", "hold_position"))
+  kable(digits = 2, caption = "The musical positiveness of Coldplay's albums", booktabs = T, align="c", escape = F) %>% 
+  column_spec(2, width = "6cm") %>%
+  kable_styling(latex_options = c("striped"), full_width = F)
 ```
 
 
@@ -205,7 +213,7 @@ Lastly, we analysed the sentiment of this album to see whether the valence of an
 
 As a result, we can say for sure that, both in terms of sound and lyrics, this album conveyed negative emotions. But this dosen't affect that people think "A Rush of Blood to the Head" is one of the best albums of the Coldplay. It can be seen that the audience's love for a album is not entirely determined by the album's positiveness. 
 
-```{r my favorate-album-lyrics, cache=TRUE, tab.align='center', tab.height=3.5}
+```{r my favorate-album-lyrics, cache=TRUE}
 rush <- genius_album(artist = "coldplay", album = "a rush of blood to the head")
 
 rush_bing <- rush %>% 
@@ -216,8 +224,9 @@ rush_bing <- rush %>%
 rush_bing %>% 
   count(word, sentiment, sort = TRUE) %>% 
   head(5) %>% 
-  kable(caption = "The most frequent words in 'A rush of blood to the head'", booktabs = T) %>% 
-  kable_styling(latex_options = c("striped", "hold_position"))
+  kable(caption = "The most frequent words in 'A rush of blood to the head'", booktabs = T, align = "c", escape = F) %>% 
+  column_spec(3, width = "6cm") %>% 
+  kable_styling(latex_options = c("striped", "hold_position"), full_width = F)
 ```
 
 ```{r sentiment-plot, fig.align='center', fig.height=3.5}
@@ -366,7 +375,7 @@ num <- corrplot(corr, method = "number", type="lower")
 
 Then we want to explore whether these audio features contribute to a higher popularity using a linear regression model. The following table shows all the audio features with a p-value less than 0.05. We can find that danceability contributes most to a higher popularity, and loudness also has a positive relationship with popularity.
 
-```{r features-popularity, tab.align='center', tab.height=3.5}
+```{r features-popularity}
 popular_songs <- spotify_songs %>% 
   filter(track_popularity > 50)
 
@@ -377,19 +386,20 @@ fit1 <- lm((track_popularity * 10) ~ acousticness + danceability + duration_ms +
 result <- as.data.frame(broom::tidy(fit1)) %>% 
   filter(p.value < 0.05)
 
-kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T) %>% 
-  kable_styling(latex_options = c("striped", "hold_position"))
+kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T, align = "c", escape = F) %>% 
+  kable_styling(latex_options = c("striped", "hold_position"), full_width = F, position = "center")
 ```
 
 ### Music genre and their popularities - by decade of release date
 
 The table below shows the distribution of each genre in this dataset. The most frequently appeared genre is "edm", while the genre "rock" appeared least.
 
-```{r genres-summary, tab.align='center', tab.height=3.5}
+```{r genres-summary}
 spotify_songs %>% 
   count(playlist_genre, sort = TRUE) %>%
-  kable(caption = "Genres in the dataset", booktabs = T) %>% 
-  kable_styling(latex_options = c("striped", "hold_position"))
+  kable(caption = "Genres in the dataset", booktabs = T, align = "c", escape = F) %>% 
+  column_spec(2, width = "6cm") %>% 
+  kable_styling(latex_options = c("striped", "hold_position"), full_width = F, position = "center")
 ```
 
 The following figure shows the average popularity of songs released in different time. To show the result clearly and for convenience of comparision, we devided the result for each genre. 
