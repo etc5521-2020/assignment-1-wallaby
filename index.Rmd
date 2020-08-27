@@ -72,7 +72,9 @@ The **variables** in this dataset are `r names(spotify_songs)`, time frame of co
 
 We chose music works created by artists that can be found on Spotify from January 1, 1957 to January 29, 2020.
 
-Here is a brief summary of the **data structure**:
+## Data structure
+
+After reading the data on RStudio, our team used the skim() function to show the specific content and structure of the data. Next, we immediately clean the data, select the variables that are useful to our EDA, and retain six major music genres (the proportions of other genres are very low, which can be ignored). Finally, we arrange the data from high to low according to track popularity. From table /@(tab:artistworks), we can see that Queen, Martin Garrix and the Chainmakers occupy one, two and three places respectively. At the same time, we can also see that there are many famous artists on the list, such as Drake, Maroon 5 or Ed Sheeran, etc.Here is a brief summary of the **data structure**:
 
 ```{r data-structure}
 skimr::skim(spotify_songs)
@@ -80,14 +82,77 @@ skimr::skim(spotify_songs)
 
 The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables of the dataset include "track_id", "track_name", "track_artist", "track_popularity", "track_album_id", "track_album_name", "track_album_release_date", "playlist_name", "playlist_id", "playlist_genre"  "playlist_subgenre", "danceability", "energy", "key", "loudness", "mode", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo" and "duration_ms".  
 
+## Analysis questions
 
-
+Research Question: What musical attributes are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
 
 # Analysis and findings
 
-### interactive table - Top Artists all over the time
+```{r cleandata}
+newdata <- spotify_songs %>% 
+        select(track_name, track_artist, track_popularity, playlist_genre, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration_ms) %>% 
+        arrange(desc(track_popularity))
 
-interactive table & bar_plot (top20) & polar plot
+new_data1 <- newdata %>% 
+  filter(playlist_genre == "latin" | playlist_genre == "r&b" | playlist_genre == "pop" | playlist_genre == "rap" | playlist_genre == "rock" | playlist_genre == "edm")
+
+```
+
+```{r artistworks, tab.cap="Top Artists with most songs"}
+datatable <- new_data1 %>% 
+  group_by(track_artist) %>%
+  summarize(Total = n()) %>% 
+  arrange(desc(Total))  
+  
+datatable(datatable)
+        
+```
+
+### top artists
+
+Similarly, this is a plot of artists with most songs showed in the bar plot. Our group decided to use two different forms to express, one is through the comparison of words(using datatable), the other is through the observation of intuitive figure. This will help to deepen our impression of the top 20 singers and have an intuitive understanding of the gap between them.
+
+```{r artists, fig.cap="Top 20 Artists who wrote the most songs from 1941 to 2020"}
+new_data1 %>% 
+  count(track_artist) %>% 
+  arrange(-n) %>% 
+  head(20) %>%
+  ggplot(aes(reorder(track_artist, n), n)) + 
+  geom_col(fill="cyan3") + 
+  coord_flip() +
+  ggtitle("Top 20 Artists who wrote the most songs from 1941 to 2020") + 
+  xlab("Artist") + 
+  ylab("Count") +
+  theme_bw()
+```
+
+Next is a radar plot. Our group filters artists whose popularity is greater than 95, and then load the data into this type of plot. In this way, the singers who are at the top or most people like can be clear at a glance, and at the same time, music lovers can know the characteristics of these top singers' music artworks.
+
+First, we can see that Maroon 5, the Weekend, Roddy Rich and KAROL G are overwhelming in popularity. Because the size of each pie chart means the level of popularity. Also, it is clear that popular singers usually create many genres of songs, which are not limited to a single genre. Next, from the perspective of different artists' music artworks style, there are filled with the great differences. 
+
+For example, from the brightness of colors, we can see that the Energy brought by Maroon 5 and Billie Eilish's music artworks is not too high. This is not to elaborate their shortcomings, but to elaborate their style, which is lyrical and soft. If judging from the color of each fan-shaped boundary line, it can be concluded that Roddy Rich and Trevor Daniel's works have the highest value of danceability, after the comparison of each artworks' average tempo, rhythm stability, beat strength, and overall regularity.
+
+```{r radarplot, fig.cap="Characteristics of top singers"}
+Artist_attributes <- new_data1 %>%
+  select(track_popularity, track_artist, energy, danceability, playlist_genre) %>%
+  group_by(track_artist)%>%
+  arrange(desc(track_popularity)) %>% 
+  filter(track_popularity > 95 ) %>% 
+  filter(!is.na(track_popularity)) %>%
+  filter(!is.na(track_artist))%>%
+  filter(!is.na(energy))%>%
+  filter(!is.na(danceability))%>%
+  ggplot(mapping = aes(x = track_artist, y = track_popularity, color = danceability, alpha = energy, fill = playlist_genre))+
+  geom_bar(stat = 'identity')+
+  coord_polar()+
+  theme_minimal()
+
+Artist_attributes 
+```
+
+
+
+
 
 ### Analyse our favorate artist
 
@@ -171,7 +236,7 @@ rush_afinn <- rush %>%
 rush_sentiment_value <- round(mean(rush_afinn$value), digits = 2)
 ```
 
-### Characteristics of each genre(?)
+### Characteristics of each genre
 
 The table below shows the ditribution of each genre in this dataset. The most frequently appeared genre is "edm", while the genre "rock" appeared least.
 
@@ -182,7 +247,7 @@ spotify_songs %>%
   kable_styling(latex_options = c("striped", "hold_position"))
 ```
 
-### Each type of songs was populated in what time period?
+### Music genre and their popularities - by decade of release date
 
 The following figure shows the average popularity of songs released in different time. To show the result clearly and for convenience of comparision, we devided the result for each genre. 
 (1) The edm music has been popular since the 1970s, and the popularities of edm music released in the past 50 years are 40 or even less. This means the edm music is not the mainstream music type nowadays. 
@@ -262,13 +327,6 @@ spotify_songs %>%
   scale_color_brewer(palette = "Accent")
 ```
 
-#### box plot - features(x)
-
-#### correlation(x)
-
-
-
-### Features and popularity(?)
 
 Then we want to explore whether these audio features contribute to a higher popularity using a linear regression model. The following table shows all the audio features with a p-value less than 0.05. We can find that danceability contributes most to a higher popularity, and loudness also has a positive relationship with popularity.
 
@@ -328,76 +386,6 @@ grid.arrange(dance_popular, loudness_popular, valence_popular,
              speechiness_popular, duration_popular, ncol = 3)
 ```
 
-```{r cleandata}
-newdata <- spotify_songs %>% 
-        select(track_name, track_artist, track_popularity, playlist_genre, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration_ms) %>% 
-        arrange(desc(track_popularity))
-
-new_data1 <- newdata %>% 
-  filter(playlist_genre == "latin" | playlist_genre == "r&b" | playlist_genre == "pop" | playlist_genre == "rap" | playlist_genre == "rock" | playlist_genre == "edm")
-
-```
-
-```{r artistworks, tab.cap="Top Artists with most songs"}
-datatable <- new_data1 %>% 
-  group_by(track_artist) %>%
-  summarize(Total = n()) %>% 
-  arrange(desc(Total))  
-  
-datatable(datatable)
-        
-```
-
-After reading the data on RStudio, our team used the skim() function to show the specific content and structure of the data. Next, we immediately clean the data, select the variables that are useful to our EDA, and retain six major music genres (the proportions of other genres are very low, which can be ignored). Finally, we arrange the data from high to low according to track popularity. From table /@(tab:artistworks), we can see that Queen, Martin Garrix and the Chainmakers occupy one, two and three places respectively. At the same time, we can also see that there are many famous artists on the list, such as Drake, Maroon 5 or Ed Sheeran, etc.
-
-# top artists
-
-Similarly, this is a plot of artists with most songs showed in the bar plot. Our group decided to use two different forms to express, one is through the comparison of words(using datatable), the other is through the observation of intuitive figure. This will help to deepen our impression of the top 20 singers and have an intuitive understanding of the gap between them.
-
-```{r artists, fig.cap="Top 20 Artists who wrote the most songs from 1941 to 2020"}
-new_data1 %>% 
-  count(track_artist) %>% 
-  arrange(-n) %>% 
-  head(20) %>%
-  ggplot(aes(reorder(track_artist, n), n)) + 
-  geom_col(fill="cyan3") + 
-  coord_flip() +
-  ggtitle("Top 20 Artists who wrote the most songs from 1941 to 2020") + 
-  xlab("Artist") + 
-  ylab("Count") +
-  theme_bw()
-```
-
-# radar plot 
-
-Next is a radar plot. Our group filters artists whose popularity is greater than 95, and then load the data into this type of plot. In this way, the singers who are at the top or most people like can be clear at a glance, and at the same time, music lovers can know the characteristics of these top singers' music artworks.
-
-First, we can see that Maroon 5, the Weekend, Roddy Rich and KAROL G are overwhelming in popularity. Because the size of each pie chart means the level of popularity. Also, it is clear that popular singers usually create many genres of songs, which are not limited to a single genre. Next, from the perspective of different artists' music artworks style, there are filled with the great differences. 
-
-For example, from the brightness of colors, we can see that the Energy brought by Maroon 5 and Billie Eilish's music artworks is not too high. This is not to elaborate their shortcomings, but to elaborate their style, which is lyrical and soft. If judging from the color of each fan-shaped boundary line, it can be concluded that Roddy Rich and Trevor Daniel's works have the highest value of danceability, after the comparison of each artworks' average tempo, rhythm stability, beat strength, and overall regularity.
-
-```{r radarplot, fig.cap="Characteristics of top singers"}
-Artist_attributes <- new_data1 %>%
-  select(track_popularity, track_artist, energy, danceability, playlist_genre) %>%
-  group_by(track_artist)%>%
-  arrange(desc(track_popularity)) %>% 
-  filter(track_popularity > 95 ) %>% 
-  filter(!is.na(track_popularity)) %>%
-  filter(!is.na(track_artist))%>%
-  filter(!is.na(energy))%>%
-  filter(!is.na(danceability))%>%
-  ggplot(mapping = aes(x = track_artist, y = track_popularity, color = danceability, alpha = energy, fill = playlist_genre))+
-  geom_bar(stat = 'identity')+
-  coord_polar()+
-  theme_minimal()
-
-Artist_attributes 
-```
-
-
-
-# bar plot
-
 The next three box plots are to find out the differences of music attributes between different Music Genres. Firstly, the relationship between color and Music Genre is established, and put into the same tibble, call "COLORS". This method allows different Music Genre can be clearly distinguished by different colors, and then the specific characteristic of each Music Genre can be judged from those box plots.
 
 The first plot is the relationship between Music Genre and Valence. It can be clearly seen from the plot that Latin has the highest value of Valence and EDM has the lowest value of Valence. This shows that Latin's capacity of conveying the musical position is more powerful, while EDM sounds more negative. The other four Music Genre have no obvious trend in this respect, which are almost between 0.3 and 0.7.
@@ -431,6 +419,9 @@ ggplot(new_data1, aes(reorder(playlist_genre, valence), y = valence)) +
 The second plot describes the relationship between Music Genre and Energy. Energy is a measure from 0.0 to 1.0 and representatives a conceptual measure of intensity and activity. It can be clearly seen from the plot that EDM has the highest value of Energy, while R B's value of Energy is the lowest, which also shows the style of these two Music Genres. Mostly, EDM will make people feel fast, loud, and noisy when listening. However, R&B is mainly lyrical, slow and quiet, which bring less energy for the listeners. Similarly, Rock has always been famous for its flexible and bold expression and passionate music rhythm, and its ranking is only inferior to EDM.
 
 
+
+
+
 ```{r energy, fig.cap="Average Energy by Music Genre"}
 ggplot(new_data1, aes(reorder(playlist_genre, energy), y = energy)) + 
   geom_boxplot(aes(fill = playlist_genre)) +
@@ -462,7 +453,7 @@ ggplot(new_data1, aes(reorder(playlist_genre, speechiness), y = speechiness)) +
 
 ```
 
-# correlation
+### Correlation between audio features
 
 The correlation of song features is very helpful for us to explore the reasons for the popularity of music artworks. We can see from the correlation plot that the characteristics of each song are specific and unique, but we can summarize them with ten musical attributes. Meanwhile, there are three types of relation between different attributes: Negative correlation, positive correlation or completely irrelevant. This is very important for us to analyze the properties of music artworks in the future. 
 
@@ -480,9 +471,6 @@ num <- corrplot(corr, method = "number", type="lower")
 
 
 
-## Potential analysis questions
-
-Research Question: What musical attributes are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
 
 
 
