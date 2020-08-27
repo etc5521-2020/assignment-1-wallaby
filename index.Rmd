@@ -76,6 +76,8 @@ readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/m
 
 ```{r read-csv}
 spotify_songs <- read.csv(here::here("spotify_songs.csv"))
+spotify_songs <- spotify_songs %>% 
+  mutate(track_artist = replace(track_artist, track_artist == "Ti<U+00EB>sto", "Tijs Michiel Verwest OON"))
 ```
 
 ## Data Source
