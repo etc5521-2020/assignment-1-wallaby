@@ -22,3 +22,6 @@ gridExtra
 genius
 tidytext
 textdata
+DT
+corrplot
+ggthemes
