@@ -272,7 +272,7 @@ kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T) %>%
   kable_styling(latex_options = c("striped", "hold_position"))
 ```
 
-Then we ploted each audio feature of the songs and the popularity in the following figure. It shows that liveness has a negative relationship with popularity, with is the same with our linear model. And we can't find any relationship between valence and popularity, this is consistent with our linear model and sentiment analysis.
+Then we ploted each audio feature of the songs and the popularity in the following figure. It shows that liveness has a negative relationship with popularity, with is the same with our linear model. And we also find that there's no absolute relationship between valence and popularity. A higher valence doesn't necessarily make a song more popular.This is consistent with our sentiment analysis.
 
 ```{r popularity-against-features}
 dance_popular <- spotify_songs %>% 
