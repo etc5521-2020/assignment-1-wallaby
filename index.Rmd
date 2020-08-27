@@ -54,7 +54,13 @@ Because Spotify contains a large number of users' data, four users who are very 
 In addition to Spotify package, our data is also mixed with blog post data created by Kaylin Pavlik. Six main categories (EDM, Latin, pop, R&B, rap, rock) are used to classify 5000 songs. The combination of the two data has a great effect on the study of the popularity of pop music. 
 ## Analysis questions
 
-By doing this exploratory data analysis, we want to konw: What musical attributes are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
+By doing this exploratory data analysis, we want to konw: 
+
+Main Question: What audio features are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
+Sub Questions: 
+1. Since 1957, what are the audio features of those top artists who make the most music artworks?
+2. 
+3. There are plenty of modern music genres nowadays, What unique style or charm can stand out and become the first choice of people?
 
 # Data description
 
