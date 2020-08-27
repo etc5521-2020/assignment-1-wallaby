@@ -35,11 +35,9 @@ library(spotifyr)
 library(ggridges)
 ```
 
-<center><img src="https://cdn.musebycl.io/styles/large_wide/s3/2019-04/spotify-music-for-every-mood-hed-2019.jpg?itok=nT0AgVbz"></center>
-
-
 [This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
 
+<center><img src = "https://cdn.musebycl.io/styles/large_wide/s3/2019-04/spotify-music-for-every-mood-hed-2019.jpg?itok=nT0AgVbz" width = 50% height = 50%></center>
 
 # Introduction and motivation
 
@@ -54,6 +52,9 @@ Spotify is a legitimate streaming music service platform, which has been support
 Because Spotify contains a large number of users' data, four users who are very interested in it, Charlie Thompson, Josiah parry, Donal Phipps, and Tom Wolff decided to make it easier for everyone to know their own preferences or the mainstream of most people's listening to songs through spotify's API, thus creating Spotifyr package. Also, it is the source of our group assignment data.
 
 In addition to Spotify package, our data is also mixed with blog post data created by Kaylin Pavlik. Six main categories (EDM, Latin, pop, R&B, rap, rock) are used to classify 5000 songs. The combination of the two data has a great effect on the study of the popularity of pop music. 
+## Analysis questions
+
+By doing this exploratory data analysis, we want to konw: What musical attributes are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
 
 # Data description
 
@@ -86,16 +87,15 @@ skimr::skim(spotify_songs)
 
 The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables of the dataset include "track_id", "track_name", "track_artist", "track_popularity", "track_album_id", "track_album_name", "track_album_release_date", "playlist_name", "playlist_id", "playlist_genre"  "playlist_subgenre", "danceability", "energy", "key", "loudness", "mode", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo" and "duration_ms".  
 
-## Analysis questions
-
-Research Question: What musical attributes are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
 
 # Analysis and findings
 
+### Top artists
+
 ```{r cleandata}
 newdata <- spotify_songs %>% 
-        select(track_name, track_artist, track_popularity, playlist_genre, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration_ms) %>% 
-        arrange(desc(track_popularity))
+  select(track_name, track_artist, track_popularity, playlist_genre, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration_ms) %>% 
+  arrange(desc(track_popularity))
 
 new_data1 <- newdata %>% 
   filter(playlist_genre == "latin" | playlist_genre == "r&b" | playlist_genre == "pop" | playlist_genre == "rap" | playlist_genre == "rock" | playlist_genre == "edm")
@@ -111,8 +111,6 @@ datatable <- new_data1 %>%
 datatable(datatable)
         
 ```
-
-### top artists
 
 Similarly, this is a plot of artists with most songs showed in the bar plot. Our group decided to use two different forms to express, one is through the comparison of words(using datatable), the other is through the observation of intuitive figure. This will help to deepen our impression of the top 20 singers and have an intuitive understanding of the gap between them.
 
@@ -153,10 +151,6 @@ Artist_attributes <- new_data1 %>%
 
 Artist_attributes 
 ```
-
-
-
-
 
 ### Analyse our favorate artist
 
@@ -240,54 +234,9 @@ rush_afinn <- rush %>%
 rush_sentiment_value <- round(mean(rush_afinn$value), digits = 2)
 ```
 
-### Characteristics of each genre
 
-The table below shows the ditribution of each genre in this dataset. The most frequently appeared genre is "edm", while the genre "rock" appeared least.
 
-```{r genres-summary}
-spotify_songs %>% 
-  count(playlist_genre, sort = TRUE) %>%
-  kable(caption = "Genres in the dataset", booktabs = T) %>% 
-  kable_styling(latex_options = c("striped", "hold_position"))
-```
-
-### Music genre and their popularities - by decade of release date
-
-The following figure shows the average popularity of songs released in different time. To show the result clearly and for convenience of comparision, we devided the result for each genre. 
-(1) The edm music has been popular since the 1970s, and the popularities of edm music released in the past 50 years are 40 or even less. This means the edm music is not the mainstream music type nowadays. 
-(2) The latin and pop music have been popular since the 1960s. The 1970s was the golden time for the latin songs, while the 1960s and 1970s were the golden time for the pop music. These old songs are still popular now. 
-(3) The r&b music went through ups and downs. The songs released from the 1980s to the 2000s are less popular than others. 
-(4) The rap music has been popular since the 1960s, and the oldest rap music is still the most popular ones. And the songs released in the 2000s have the lowest popularity now. 
-(5) The popularitise of rock music released in different time period are quite stable. While the ones released from the 1960s to the 1990s are more popular than the others.
-
-```{r time-popular}
-spotify_songs <- spotify_songs %>% 
-  mutate(year = substr(track_album_release_date, 1, 4))
-
-spotify_songs <- spotify_songs %>% 
-  mutate(decade = round(as.numeric(year) - 4.5, -1))
-
-time_popular <- spotify_songs %>% 
-  select(c("playlist_genre", "decade", "track_popularity")) %>%
-  pivot_longer(cols = playlist_genre) %>% 
-  group_by(as.character(value), as.character(decade)) %>% 
-  summarise(mean_popularity = mean(track_popularity)) 
-
-rename(time_popular, genre = `as.character(value)`, 
-       decade = `as.character(decade)`) -> time_popular
-
-time_popular %>% 
-  ggplot() +
-  geom_col(aes(x = decade, y = mean_popularity, 
-               fill = decade), alpha = 0.5) + 
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) + 
-  facet_wrap(~genre)
-
-```
-
-### Features analysis
+### Analyse the audio features
 
 In this part, we analysed the audio features of all the songs in our dataset. The figure below shows how these features like in different genres. Here's a simple explaination of these features:
 
@@ -331,6 +280,82 @@ spotify_songs %>%
   scale_color_brewer(palette = "Accent")
 ```
 
+The next three box plots are to find out the differences of music attributes between different Music Genres. Firstly, the relationship between color and Music Genre is established, and put into the same tibble, call "COLORS". This method allows different Music Genre can be clearly distinguished by different colors, and then the specific characteristic of each Music Genre can be judged from those box plots.
+
+The first plot is the relationship between Music Genre and Valence. It can be clearly seen from the plot that Latin has the highest value of Valence and EDM has the lowest value of Valence. This shows that Latin's capacity of conveying the musical position is more powerful, while EDM sounds more negative. The other four Music Genre have no obvious trend in this respect, which are almost between 0.3 and 0.7.
+
+ 
+
+```{r color}
+COLORS <- c("#FFF8A3", "#A9CC8F", 
+            "#B2C8D9", "#BEA37A", 
+            "#F3AA79", "#B5B5A9")
+
+names(COLORS) = c('latin', 'r&b', 
+                  'edm', 'pop', 
+                  'rap','rock')
+
+
+```
+
+```{r barplot, fig.cap="Average valence by Music Genre"}
+ggplot(new_data1, aes(reorder(playlist_genre, valence), y = valence)) + 
+  geom_boxplot(aes(fill = playlist_genre)) +
+  coord_flip() +
+  ggtitle("Average valence by Music Genre") + 
+  xlab("Genre") + 
+  ylab("valence") +
+  scale_fill_manual(values = COLORS)+ 
+  theme(legend.position="none")
+
+```
+
+The second plot describes the relationship between Music Genre and Energy. Energy is a measure from 0.0 to 1.0 and representatives a conceptual measure of intensity and activity. It can be clearly seen from the plot that EDM has the highest value of Energy, while R B's value of Energy is the lowest, which also shows the style of these two Music Genres. Mostly, EDM will make people feel fast, loud, and noisy when listening. However, R&B is mainly lyrical, slow and quiet, which bring less energy for the listeners. Similarly, Rock has always been famous for its flexible and bold expression and passionate music rhythm, and its ranking is only inferior to EDM.
+
+```{r energy, fig.cap="Average Energy by Music Genre"}
+ggplot(new_data1, aes(reorder(playlist_genre, energy), y = energy)) + 
+  geom_boxplot(aes(fill = playlist_genre)) +
+  coord_flip() +
+  ggtitle("Average energy by Music Genre") + 
+  xlab("Genre") + 
+  ylab("Energy") +
+  scale_fill_manual(values = COLORS) + 
+  theme(legend.position="none")
+```
+
+Finally, this plot describes the relationship between Music Genres and Speechlesness. Speechlessness detects the presence of spoken words in a track. If more words or sentences are said in a song, the closer to 1.0 the attribute value. That arrtibute is very interesting, which indicates whether the artists tends to express ideas by describing the lyrics in music or writing the melody of music to express their feelings.
+
+Focus on the plot, it is no doubt that Rap is bound to occupy the first place, because the characteristic of Rap is to quickly tell a series of rhyming lyrics against the background of mechanical rhythmic sound. What is worth noting is that Rock and POP are the lowest, which shows that those two genres tend to use the melody or rhythm of music to affect the audience, rather than using the lyrics.
+
+After describing the contents and internal relations of the three plots in detail, there are still many related attributes that have not been explored. The purpose of our group is to put up the most interesting parts. If someone is interested, it is easy to continue to analyse.
+
+
+```{r speechiness, fig.cap="Average speechiness by Music Genre"}
+ggplot(new_data1, aes(reorder(playlist_genre, speechiness), y = speechiness)) + 
+  geom_boxplot(aes(fill = playlist_genre)) +
+  coord_flip() +
+  ggtitle("Average speechiness by Music Genre") + 
+  xlab("Genre") + 
+  ylab("speechiness") +
+  scale_fill_manual(values = COLORS) + 
+  theme(legend.position="none")
+```
+
+### Correlation between audio features
+
+The correlation of song features is very helpful for us to explore the reasons for the popularity of music artworks. We can see from the correlation plot that the characteristics of each song are specific and unique, but we can summarize them with ten musical attributes. Meanwhile, there are three types of relation between different attributes: Negative correlation, positive correlation or completely irrelevant. This is very important for us to analyze the properties of music artworks in the future. 
+
+For example, if a song has a strong energy attribute, it must also have a high value of loudness, and the probability of not belonging to acoustic is also very high. If a person like songs that are more active or have higher valence, he should explore his some potential favourite songs of high danceability, high energy, and contains more vocal content. It is easy to see that the role of correalation plot is very meaningful. It can play an irreplaceable role in the analysis of songs or the selection of the favorite attributes of songs. And the rest of effects can be explored later.
+
+
+```{r cor}
+options(repr.plot.width = 30, repr.plot.height = 20)
+newdata_sliced <- new_data1[, 5:14]
+corr <- cor(newdata_sliced)
+
+
+num <- corrplot(corr, method = "number", type="lower")
+```
 
 Then we want to explore whether these audio features contribute to a higher popularity using a linear regression model. The following table shows all the audio features with a p-value less than 0.05. We can find that danceability contributes most to a higher popularity, and loudness also has a positive relationship with popularity.
 
@@ -348,6 +373,53 @@ result <- as.data.frame(broom::tidy(fit1)) %>%
 kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T) %>% 
   kable_styling(latex_options = c("striped", "hold_position"))
 ```
+
+### Music genre and their popularities - by decade of release date
+
+The table below shows the distribution of each genre in this dataset. The most frequently appeared genre is "edm", while the genre "rock" appeared least.
+
+```{r genres-summary}
+spotify_songs %>% 
+  count(playlist_genre, sort = TRUE) %>%
+  kable(caption = "Genres in the dataset", booktabs = T) %>% 
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+The following figure shows the average popularity of songs released in different time. To show the result clearly and for convenience of comparision, we devided the result for each genre. 
+(1) The edm music has been popular since the 1970s, and the popularities of edm music released in the past 50 years are 40 or even less. This means the edm music is not the mainstream music type nowadays. 
+(2) The latin and pop music have been popular since the 1960s. The 1970s was the golden time for the latin songs, while the 1960s and 1970s were the golden time for the pop music. These old songs are still popular now. 
+(3) The r&b music went through ups and downs. The songs released from the 1980s to the 2000s are less popular than others. 
+(4) The rap music has been popular since the 1960s, and the oldest rap music is still the most popular ones. And the songs released in the 2000s have the lowest popularity now. 
+(5) The popularitise of rock music released in different time period are quite stable. While the ones released from the 1960s to the 1990s are more popular than the others.
+
+```{r time-popular}
+spotify_songs <- spotify_songs %>% 
+  mutate(year = substr(track_album_release_date, 1, 4))
+
+spotify_songs <- spotify_songs %>% 
+  mutate(decade = round(as.numeric(year) - 4.5, -1))
+
+time_popular <- spotify_songs %>% 
+  select(c("playlist_genre", "decade", "track_popularity")) %>%
+  pivot_longer(cols = playlist_genre) %>% 
+  group_by(as.character(value), as.character(decade)) %>% 
+  summarise(mean_popularity = mean(track_popularity)) 
+
+rename(time_popular, genre = `as.character(value)`, 
+       decade = `as.character(decade)`) -> time_popular
+
+time_popular %>% 
+  ggplot() +
+  geom_col(aes(x = decade, y = mean_popularity, 
+               fill = decade), alpha = 0.5) + 
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + 
+  facet_wrap(~genre)
+
+```
+
+## Relationship between popularity and audio features
 
 Then we ploted each audio feature of the songs and the popularity in the following figure. It shows that liveness has a negative relationship with popularity, with is the same with our linear model. And we also find that there's no absolute relationship between valence and popularity. A higher valence doesn't necessarily make a song more popular.This is consistent with our sentiment analysis.
 
@@ -383,110 +455,18 @@ speechiness_popular <- spotify_songs %>%
 
 duration_popular <- spotify_songs %>% 
   ggplot() + 
-  geom_point(aes(x = duration_ms, y = track_popularity), color = "#C3D7A4", alpha = 0.05)
+  geom_point(aes(x = (duration_ms / 100), y = track_popularity), color = "#C3D7A4", alpha = 0.05)
 
 grid.arrange(dance_popular, loudness_popular, valence_popular, 
              energy_popular, instrumentalness_popular, liveness_popular, 
              speechiness_popular, duration_popular, ncol = 3)
 ```
 
-The next three box plots are to find out the differences of music attributes between different Music Genres. Firstly, the relationship between color and Music Genre is established, and put into the same tibble, call "COLORS". This method allows different Music Genre can be clearly distinguished by different colors, and then the specific characteristic of each Music Genre can be judged from those box plots.
-
-The first plot is the relationship between Music Genre and Valence. It can be clearly seen from the plot that Latin has the highest value of Valence and EDM has the lowest value of Valence. This shows that Latin's capacity of conveying the musical position is more powerful, while EDM sounds more negative. The other four Music Genre have no obvious trend in this respect, which are almost between 0.3 and 0.7.
-
  
 
-```{r color}
-COLORS <- c("#FFF8A3", "#A9CC8F", 
-            "#B2C8D9", "#BEA37A", 
-            "#F3AA79", "#B5B5A9")
 
-names(COLORS) = c('latin', 'r&b', 
-                  'edm', 'pop', 
-                  'rap','rock')
-
-
-```
-
-```{r barplot, fig.cap="Average valence by Music Genre"}
-ggplot(new_data1, aes(reorder(playlist_genre, valence), y = valence)) + 
-  geom_boxplot(aes(fill = playlist_genre)) +
-  coord_flip() +
-  ggtitle("Average valence by Music Genre") + 
-  xlab("Genre") + 
-  ylab("valence") +
-  scale_fill_manual(values = COLORS)+ 
-  theme(legend.position="none")
-
-```
-
-The second plot describes the relationship between Music Genre and Energy. Energy is a measure from 0.0 to 1.0 and representatives a conceptual measure of intensity and activity. It can be clearly seen from the plot that EDM has the highest value of Energy, while R B's value of Energy is the lowest, which also shows the style of these two Music Genres. Mostly, EDM will make people feel fast, loud, and noisy when listening. However, R&B is mainly lyrical, slow and quiet, which bring less energy for the listeners. Similarly, Rock has always been famous for its flexible and bold expression and passionate music rhythm, and its ranking is only inferior to EDM.
-
-
-
-
-
-```{r energy, fig.cap="Average Energy by Music Genre"}
-ggplot(new_data1, aes(reorder(playlist_genre, energy), y = energy)) + 
-  geom_boxplot(aes(fill = playlist_genre)) +
-  coord_flip() +
-  ggtitle("Average energy by Music Genre") + 
-  xlab("Genre") + 
-  ylab("Energy") +
-  scale_fill_manual(values = COLORS) + 
-  theme(legend.position="none")
-
-```
-
-Finally, this plot describes the relationship between Music Genres and Speechlesness. Speechlessness detects the presence of spoken words in a track. If more words or sentences are said in a song, the closer to 1.0 the attribute value. That arrtibute is very interesting, which indicates whether the artists tends to express ideas by describing the lyrics in music or writing the melody of music to express their feelings.
-
-Focus on the plot, it is no doubt that Rap is bound to occupy the first place, because the characteristic of Rap is to quickly tell a series of rhyming lyrics against the background of mechanical rhythmic sound. What is worth noting is that Rock and POP are the lowest, which shows that those two genres tend to use the melody or rhythm of music to affect the audience, rather than using the lyrics.
-
-After describing the contents and internal relations of the three plots in detail, there are still many related attributes that have not been explored. The purpose of our group is to put up the most interesting parts. If someone is interested, it is easy to continue to analyse.
-
-
-```{r speechiness, fig.cap="Average speechiness by Music Genre"}
-ggplot(new_data1, aes(reorder(playlist_genre, speechiness), y = speechiness)) + 
-  geom_boxplot(aes(fill = playlist_genre)) +
-  coord_flip() +
-  ggtitle("Average speechiness by Music Genre") + 
-  xlab("Genre") + 
-  ylab("speechiness") +
-  scale_fill_manual(values = COLORS) + 
-  theme(legend.position="none")
-
-```
-
-### Correlation between audio features
-
-The correlation of song features is very helpful for us to explore the reasons for the popularity of music artworks. We can see from the correlation plot that the characteristics of each song are specific and unique, but we can summarize them with ten musical attributes. Meanwhile, there are three types of relation between different attributes: Negative correlation, positive correlation or completely irrelevant. This is very important for us to analyze the properties of music artworks in the future. 
-
-For example, if a song has a strong energy attribute, it must also have a high value of loudness, and the probability of not belonging to acoustic is also very high. If a person like songs that are more active or have higher valence, he should explore his some potential favourite songs of high danceability, high energy, and contains more vocal content. It is easy to see that the role of correalation plot is very meaningful. It can play an irreplaceable role in the analysis of songs or the selection of the favorite attributes of songs. And the rest of effects can be explored later.
-
-
-```{r cor}
-options(repr.plot.width = 30, repr.plot.height = 20)
-newdata_sliced <- new_data1[, 5:14]
-corr <- cor(newdata_sliced)
-
-
-num <- corrplot(corr, method = "number", type="lower")
-```
-
-
-
-
-
-
-# Limitation
-
-1. popularity: too many zeros & how to calculate it
-
-
- 
-
-# citations
-we have use ggplot2 made by @ggplot2, skimr made by @skimr, corrplot made by @corrplot2017, ggthemes made by @ggthemes and DT made by @DT packages. 
+The R packages we used in this report: 
+_@ggplot2, @skimr, @corrplot2017, @ggthemes, @DT, @devtools, @readr, @tidyverse, @dplyr, @lubridate, @knitr, @kableExtra, @broom, @gridExtra, @genius, @tidytext, @textdata, @spotifyr,  @ggridges ._
 
 # Reference
 
