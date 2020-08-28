@@ -92,7 +92,7 @@ We chose music works created by artists that can be found on Spotify from Januar
 
 ## Data structure
 
-After reading the data on RStudio, our team used the skim() function to show the specific content and structure of the data. Next, we immediately clean the data, select the variables that are useful to our EDA, and retain six major music genres (the proportions of other genres are very low, which can be ignored). Finally, we arrange the data from high to low according to track popularity. From table /@(tab:artistworks), we can see that Queen, Martin Garrix and the Chainmakers occupy one, two and three places respectively. At the same time, we can also see that there are many famous artists on the list, such as Drake, Maroon 5 or Ed Sheeran, etc.Here is a brief summary of the **data structure**:
+After reading the data on RStudio, our team used the skim() function to show the specific content and structure of the data. And here is a brief summary of the **data structure**:
 
 ```{r data-structure}
 skimr::skim(spotify_songs)
@@ -104,7 +104,9 @@ The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The
 
 # Analysis and findings
 
-### Top artists
+## Top artists
+
+Now, we will clean the data, select the variables that are useful to our EDA, and retain six major music genres (the proportions of other genres are very low, which can be ignored). And then, we arrange the data from high to low according to track popularity. 
 
 ```{r cleandata}
 newdata <- spotify_songs %>% 
@@ -115,6 +117,8 @@ new_data1 <- newdata %>%
   filter(playlist_genre == "latin" | playlist_genre == "r&b" | playlist_genre == "pop" | playlist_genre == "rap" | playlist_genre == "rock" | playlist_genre == "edm")
 
 ```
+
+From the following table and figure, we can see that Queen, Martin Garrix and the Chainmakers occupy one, two and three places respectively. Also, we can see that there are many famous artists on the list, such as Drake, Maroon 5 or Ed Sheeran, etc.
 
 ```{r artistworks, tab.cap="Top Artists with most songs"}
 datatable <- new_data1 %>% 
@@ -167,7 +171,7 @@ Artist_attributes <- new_data1 %>%
 Artist_attributes 
 ```
 
-### Analyse our favorate artist
+## Analyse our favorate artist
 
 In this part, we want to take one artist for example to do some detailed exploratory analysis using the "spotifyr" package. Here we choose the Coldplay, our favorate artist. 
 
@@ -253,8 +257,7 @@ rush_sentiment_value <- round(mean(rush_afinn$value), digits = 2)
 ```
 
 
-
-### Analyse the audio features
+## Analyse the audio features
 
 In this part, we analysed the audio features of all the songs in our dataset. The figure below shows how these features like in different genres. Here's a simple explaination of these features:
 
@@ -345,9 +348,6 @@ Finally, this plot describes the relationship between Music Genres and Speechles
 
 Focus on the plot, it is no doubt that Rap is bound to occupy the first place, because the characteristic of Rap is to quickly tell a series of rhyming lyrics against the background of mechanical rhythmic sound. What is worth noting is that Rock and POP are the lowest, which shows that those two genres tend to use the melody or rhythm of music to affect the audience, rather than using the lyrics.
 
-After describing the contents and internal relations of the three plots in detail, there are still many related attributes that have not been explored. The purpose of our group is to put up the most interesting parts. If someone is interested, it is easy to continue to analyse.
-
-
 ```{r speechiness, fig.cap="Average speechiness by Music Genre", fig.align='center', fig.height=3.5}
 ggplot(new_data1, aes(reorder(playlist_genre, speechiness), y = speechiness)) + 
   geom_boxplot(aes(fill = playlist_genre)) +
@@ -359,42 +359,12 @@ ggplot(new_data1, aes(reorder(playlist_genre, speechiness), y = speechiness)) +
   theme(legend.position="none")
 ```
 
-### Correlation between audio features
-
-The correlation of song features is very helpful for us to explore the reasons for the popularity of music artworks. We can see from the correlation plot that the characteristics of each song are specific and unique, but we can summarize them with ten musical attributes. Meanwhile, there are three types of relation between different attributes: Negative correlation, positive correlation or completely irrelevant. This is very important for us to analyze the properties of music artworks in the future. 
-
-For example, if a song has a strong energy attribute, it must also have a high value of loudness, and the probability of not belonging to acoustic is also very high. If a person like songs that are more active or have higher valence, he should explore his some potential favourite songs of high danceability, high energy, and contains more vocal content. It is easy to see that the role of correalation plot is very meaningful. It can play an irreplaceable role in the analysis of songs or the selection of the favorite attributes of songs. And the rest of effects can be explored later.
+After describing the contents and internal relations of the three plots in detail, there are still many related attributes that have not been explored. The purpose of our group is to put up the most interesting parts. If someone is interested, it is easy to continue to analyse.
 
 
-```{r cor, fig.align='center', fig.height=5}
-options(repr.plot.width = 30, repr.plot.height = 20)
-newdata_sliced <- new_data1[, 5:14]
-corr <- cor(newdata_sliced)
+## Music genre and their popularities - by decade of release date
 
-
-num <- corrplot(corr, method = "number", type="lower")
-```
-
-Then we want to explore whether these audio features contribute to a higher popularity using a linear regression model. The following table shows all the audio features with a p-value less than 0.05. We can find that danceability contributes most to a higher popularity, and loudness also has a positive relationship with popularity.
-
-```{r features-popularity}
-popular_songs <- spotify_songs %>% 
-  filter(track_popularity > 50)
-
-fit1 <- lm((track_popularity * 10) ~ acousticness + danceability + duration_ms + 
-             energy + instrumentalness + key + liveness + loudness + 
-             mode + speechiness + tempo + valence, data = popular_songs)
-
-result <- as.data.frame(broom::tidy(fit1)) %>% 
-  filter(p.value < 0.05)
-
-kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T, align = "c", escape = F) %>% 
-  kable_styling(latex_options = c("striped", "hold_position"), full_width = F, position = "center")
-```
-
-### Music genre and their popularities - by decade of release date
-
-The table below shows the distribution of each genre in this dataset. The most frequently appeared genre is "edm", while the genre "rock" appeared least.
+After reviewing the internal relations between audio features and Music Genres, now we can discuss about the Music Genres in detail. The table below shows the distribution of each genre in this dataset. The most frequently appeared genre is "edm", while the genre "rock" appeared least.
 
 ```{r genres-summary}
 spotify_songs %>% 
@@ -438,9 +408,26 @@ time_popular %>%
 
 ```
 
-## Relationship between popularity and audio features
+## Correlation between popularity and audio features
 
-Then we ploted each audio feature of the songs and the popularity in the following figure. It shows that liveness has a negative relationship with popularity, with is the same with our linear model. And we also find that there's no absolute relationship between valence and popularity. A higher valence doesn't necessarily make a song more popular.This is consistent with our sentiment analysis.
+### Internal Relations between audio features
+
+The correlation of song features is very helpful for us to explore the reasons for the popularity of music artworks. We can see from the correlation plot that the characteristics of each song are specific and unique, but we can summarize them with ten musical attributes. Meanwhile, there are three types of relation between different attributes: Negative correlation, positive correlation or completely irrelevant. This is very important for us to analyze the properties of music artworks in the future. 
+
+For example, if a song has a strong energy attribute, it must also have a high value of loudness, and the probability of not belonging to acoustic is also very high. If a person like songs that are more active or have higher valence, he should explore his some potential favourite songs of high danceability, high energy, and contains more vocal content. It is easy to see that the role of correalation plot is very meaningful. It can play an irreplaceable role in the analysis of songs or the selection of the favorite attributes of songs. And the rest of effects can be explored later.
+
+```{r cor, fig.align='center', fig.height=5}
+options(repr.plot.width = 30, repr.plot.height = 20)
+newdata_sliced <- new_data1[, 5:14]
+corr <- cor(newdata_sliced)
+
+
+num <- corrplot(corr, method = "number", type="lower")
+```
+
+### Correlations showing in different forms 
+
+After describing the unique information about audio features, now we pay attention to exploring whether these audio features contribute to a higher popularity. First we ploted each audio feature of the songs and the popularity in the following figure to observe. It shows that liveness has a negative relationship with popularity and we also find that there's no absolute relationship between valence and popularity. A higher valence doesn't necessarily make a song more popular.This is consistent with our sentiment analysis.
 
 ```{r popularity-against-features, fig.align='center'}
 dance_popular <- spotify_songs %>% 
@@ -481,8 +468,33 @@ grid.arrange(dance_popular, loudness_popular, valence_popular,
              speechiness_popular, duration_popular, ncol = 3)
 ```
 
- 
+Also, We are not sure whether those above dot plots can directly reveal the relationship between these popularity and audio features. So we pay attention to exploring whether these audio features contribute to a higher popularity using a linear regression model just in case. And the following table shows all the audio features with a p-value less than 0.05. We can draw a conclusion that danceability contributes most to a higher popularity, loudness has a positive relationship with popularity and liveness has a negative relationship with popularity, with is the same with those dot plots conclusion.
 
+```{r features-popularity}
+popular_songs <- spotify_songs %>% 
+  filter(track_popularity > 50)
+
+fit1 <- lm((track_popularity * 10) ~ acousticness + danceability + duration_ms + 
+             energy + instrumentalness + key + liveness + loudness + 
+             mode + speechiness + tempo + valence, data = popular_songs)
+
+result <- as.data.frame(broom::tidy(fit1)) %>% 
+  filter(p.value < 0.05)
+
+kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T, align = "c", escape = F) %>% 
+  kable_styling(latex_options = c("striped", "hold_position"), full_width = F, position = "center")
+```
+
+# Conclusion
+
+After Exploratory Data Analysis, our group got the answers to those questions. 
+First of all, there is a positive or negative correlation between audio features and track popularity. However, the relationship coefficient is not very large. The popularity of music artworks depends more on the artist's own popularity, creative talent or singing ability, or external factors such as world trends. The probability of success by deliberately catering to audio features and creating specific songs is not sufficient. 
+
+Secondly, each top artist has its own artistic characteristics, and will be loved by specific groups of people. Top artists do not create music artworks according to the trend, instead, they will create their own trend for the world. 
+
+As for the six kinds of music genres that can stand out from the modern music, there are also their own characteristics inside. It's hard to understand the reasons for their success because of their unique styles. What we can do is to determine the genre of each song according to its style. 
+
+Finally, Although Coldplay, our favorite band, is a rock band, they never fall into the conventional routine of rock band. On the contrary, they stick to their own style, try unconventional music routines as far as possible, and point to people's hearts with straightforward, profound and moving melody. This also confirms our analysis that Coldplay songs' lyrics convey negative emotions, which does not affect their popularity, but makes them top artists. In conclusion, track popularity will pay more attention to the singer's own ability and attitude, rather than audio features. The biggest role of audio features is to reflect the singer's music style, rather than increase popularity.
 
 The R packages we used in this report: 
 _@ggplot2, @skimr, @corrplot2017, @ggthemes, @DT, @devtools, @readr, @tidyverse, @dplyr, @lubridate, @knitr, @kableExtra, @broom, @gridExtra, @genius, @tidytext, @textdata, @spotifyr,  @ggridges ._
