@@ -286,10 +286,14 @@ In this part, we analysed the audio features of all the songs in our dataset. Th
 - valence: A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
 
 ```{r features-genre, fig.align='center', fig.height=5}
-feature_names <- names(spotify_songs)[13:24]
+spotify_songs_features <- spotify_songs %>% 
+  mutate(duration_s = round(duration_ms / 1000)) %>% 
+  select(-duration_ms)
 
-spotify_songs %>%
-  select(c("playlist_genre", feature_names)) %>%
+feature_names <- names(spotify_songs_features)[13:24]
+
+spotify_songs_features %>%
+  select(c("playlist_genre", feature_names)) %>% 
   pivot_longer(cols = feature_names) %>%
   ggplot(aes(x = value)) +
   geom_density(aes(color = playlist_genre), alpha = 0.5) +
@@ -425,7 +429,7 @@ corr <- cor(newdata_sliced)
 num <- corrplot(corr, method = "number", type="lower")
 ```
 
-### Correlations showing in different forms 
+### Correlation between popularity and a certain audio feature
 
 After describing the unique information about audio features, now we pay attention to exploring whether these audio features contribute to a higher popularity. First we ploted each audio feature of the songs and the popularity in the following figure to observe. It shows that liveness has a negative relationship with popularity and we also find that there's no absolute relationship between valence and popularity. A higher valence doesn't necessarily make a song more popular.This is consistent with our sentiment analysis.
 
@@ -459,20 +463,20 @@ speechiness_popular <- spotify_songs %>%
   ggplot() + 
   geom_point(aes(x = speechiness, y = track_popularity), color = "#C4961A", alpha = 0.05)
 
-duration_popular <- spotify_songs %>% 
+duration_popular <- spotify_songs_features %>% 
   ggplot() + 
-  geom_point(aes(x = (duration_ms / 100), y = track_popularity), color = "#C3D7A4", alpha = 0.05)
+  geom_point(aes(x = duration_s, y = track_popularity), color = "#C3D7A4", alpha = 0.05)
 
 grid.arrange(dance_popular, loudness_popular, valence_popular, 
              energy_popular, instrumentalness_popular, liveness_popular, 
              speechiness_popular, duration_popular, ncol = 3)
 ```
 
-Also, We are not sure whether those above dot plots can directly reveal the relationship between these popularity and audio features. So we pay attention to exploring whether these audio features contribute to a higher popularity using a linear regression model just in case. And the following table shows all the audio features with a p-value less than 0.05. We can draw a conclusion that danceability contributes most to a higher popularity, loudness has a positive relationship with popularity and liveness has a negative relationship with popularity, with is the same with those dot plots conclusion.
+Also, We are not sure whether those above dot plots can directly reveal the relationship between these popularity and audio features. So we pay attention to exploring whether these audio features contribute to a higher popularity using a linear regression model just in case. Here we filtered the songs with a popularity greater than 0, since 0 popularity value does not make sense in this model. And the following table shows all the audio features with a p-value less than 0.05. We can draw a conclusion that danceability and valence contribute most to a higher popularity. Acousticness, key, loudness, mode and tempo also have positive relationship with popularity. While energy, instrumentalness, liveness and speechiness have negative relationship with popularity, with is similar with those dot plots conclusion.
 
 ```{r features-popularity}
 popular_songs <- spotify_songs %>% 
-  filter(track_popularity > 50)
+  filter(track_popularity > 0)
 
 fit1 <- lm((track_popularity * 10) ~ acousticness + danceability + duration_ms + 
              energy + instrumentalness + key + liveness + loudness + 
