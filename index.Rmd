@@ -1,10 +1,10 @@
 ---
 title: "Spotify Music Exploratory Data Analysis"
-subtitle: "ETC5521 Assignment 1"
+subtitle: "ETC5521 Assignment 2"
 team: wallaby
 author: 
-  - Chengzhi Ye
-  - Yan Ma
+  - Helen Evangelina
+  - Rahul Bharadwaj
 date: "`r Sys.Date()`"
 bibliography: references.bib
 output: 

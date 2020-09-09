@@ -1,17 +1,17 @@
-# ETC5521 Assignment 1 
+# ETC5521 Assignment 2 
 
 Team name: wallaby
 
 Team members:
 
-* Chengzhi Ye
-* Yan Ma
+* Helen Evangelina
+* Rahul Bharadwaj
 
 # Steps
 
-4. Write your data description under the header Data description in `index.Rmd`. A data description should tell the reader the source of the data, and detail the structure of the data, including variables, time frame of collection, collection methods. 
+4. You should create a new issue on the repo, that maps out how the report will be improved. Both members need to comment on the plan. There are various ways you might think about to improve the first analysis: you can brainstorm new questions to answer, different plots or calculations to answer the original questions, or even remove parts that were not effective in the previous report. Think about how elements of topics covered in weeks 4-6 might be used. Also think about what would be needed to do to finish the analysis, to be able to make some conclusions about what was learned from the analysis about the topic of the data. 
 
-5. Brainstorm what questions would be possible to answer with this data (and only this data). Articulate the primary question, and then three secondary questions. 
+5. Each team member needs to add one new question to be answered with the data, that will broaden the scope of the existing report. Write this into the revised report. 
 
 6. Finish your report, which should be structured as follows
     - Introduction and motivation: Give the bigger picture of the data, and inspire the reader to learn more about the problem by reading your analysis. 
@@ -26,6 +26,6 @@ Team members:
 # Tasks
 
 
-- [ ] Contributed step 4-5 to the team github repo **due 21st Aug**
-- [ ] Final report available on repo **due 28th Aug**
-- [ ] Peer feedback provided as an issue on your assigned group's repo **due 4th Sep**
+- [ ] Contributed step 4-5 to the team github repo **due 11th Sep**
+- [ ] Final report available on repo **due 18th Sep**
+- [ ] Peer feedback provided as an issue on your assigned group's repo **due 25th Sep**
