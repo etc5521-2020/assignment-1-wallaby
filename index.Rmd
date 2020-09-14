@@ -12,7 +12,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center')
 library(devtools)
 library(readr)
 library(tidyverse)
@@ -67,6 +67,10 @@ Sub Questions:
 
 3. There are plenty of modern music genres nowadays, What unique style or charm can stand out and become the first choice of people?
 
+4.
+
+5. What exactly makes artists stand out even when there are artists doing the same kind of music? What is the Unique Selling Point (USP) of a few particular selected artists?
+
 # Data description
 
 ```{r read-data, eval=FALSE}
@@ -84,9 +88,9 @@ spotify_songs <- spotify_songs %>%
 
 The data of this report is part of the [tidytuesday chanllenge](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-21/readme.md), which comes from [Spotify](https://www.spotify.com/) via the  [spotifyr](https://www.rdocumentation.org/packages/spotifyr/versions/2.1.1) package.
 
-The **variables** in this dataset are `r names(spotify_songs)`, time frame of collection is from 1957-01-01 to 2020-01-29.
+The **variables** in this dataset are `r names(spotify_songs)`.
 
-**Data collection methods:** Spotifyr package can extract track audio characteristics or other related information from Spotify's Web API in batches. For example, if you want to search for an artist, just type in his name, and all his albums or songs will be listed in seconds. Meanwhile, Spotifyr package will record the popularity metrics of all tracks or albums, so it is easy to understand the correlation between music popularity and music characteristics. Then, Jon Harmon and Neal Grantham extracted the Spotifr package and added the content of Kaylin Pavlik's recent blogpost to divide the genre of nearly 5000 songs, thus generating the Tidytuesdayr package we need for this assignment.
+**Data Collection Methods:** Spotifyr package can extract track audio characteristics or other related information from Spotify's Web API in batches. For example, if you want to search for an artist, just type in his name, and all his albums or songs will be listed in seconds. Meanwhile, Spotifyr package will record the popularity metrics of all tracks or albums, so it is easy to understand the correlation between music popularity and music characteristics. Then, Jon Harmon and Neal Grantham extracted the Spotifr package and added the content of Kaylin Pavlik's recent blogpost to divide the genre of nearly 5000 songs, thus generating the Tidytuesdayr package we need for this assignment.
 
 We chose music works created by artists that can be found on Spotify from January 1, 1957 to January 29, 2020.
 
@@ -95,12 +99,11 @@ We chose music works created by artists that can be found on Spotify from Januar
 After reading the data on RStudio, our team used the skim() function to show the specific content and structure of the data. And here is a brief summary of the **data structure**:
 
 ```{r data-structure}
-skimr::skim(spotify_songs)
+glimpse(spotify_songs)
 ```
 
 
-The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables of the dataset include "track_id", "track_name", "track_artist", "track_popularity", "track_album_id", "track_album_name", "track_album_release_date", "playlist_name", "playlist_id", "playlist_genre"  "playlist_subgenre", "danceability", "energy", "key", "loudness", "mode", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo" and "duration_ms".  
-
+The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables and their types are as mentioned above.  
 
 # Analysis and findings
 
@@ -110,12 +113,12 @@ Now, we will clean the data, select the variables that are useful to our EDA, an
 
 ```{r cleandata}
 newdata <- spotify_songs %>% 
-  select(track_name, track_artist, track_popularity, playlist_genre, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration_ms) %>% 
-  arrange(desc(track_popularity))
+  select(track_name, track_artist, track_popularity, playlist_genre, danceability, energy, key,
+         loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo,
+         duration_ms) %>% arrange(desc(track_popularity))
 
-new_data1 <- newdata %>% 
+new_data1 <- newdata %>%
   filter(playlist_genre == "latin" | playlist_genre == "r&b" | playlist_genre == "pop" | playlist_genre == "rap" | playlist_genre == "rock" | playlist_genre == "edm")
-
 ```
 
 From the following table and figure, we can see that Queen, Martin Garrix and the Chainmakers occupy one, two and three places respectively. Also, we can see that there are many famous artists on the list, such as Drake, Maroon 5 or Ed Sheeran, etc.
@@ -123,11 +126,10 @@ From the following table and figure, we can see that Queen, Martin Garrix and th
 ```{r artistworks, tab.cap="Top Artists with most songs"}
 datatable <- new_data1 %>% 
   group_by(track_artist) %>%
-  summarize(Total = n()) %>% 
-  arrange(desc(Total))  
+  summarize(TotalSongs = n()) %>% 
+  arrange(desc(TotalSongs))  
   
 datatable(datatable)
-        
 ```
 
 Similarly, this is a plot of artists with most songs showed in the bar plot. Our group decided to use two different forms to express, one is through the comparison of words(using datatable), the other is through the observation of intuitive figure. This will help to deepen our impression of the top 20 singers and have an intuitive understanding of the gap between them.
@@ -153,7 +155,7 @@ First, we can see that Maroon 5, the Weekend, Roddy Rich and KAROL G are overwhe
 For example, from the brightness of colors, we can see that the Energy brought by Maroon 5 and Billie Eilish's music artworks is not too high. This is not to elaborate their shortcomings, but to elaborate their style, which is lyrical and soft. If judging from the color of each fan-shaped boundary line, it can be concluded that Roddy Rich and Trevor Daniel's works have the highest value of danceability, after the comparison of each artworks' average tempo, rhythm stability, beat strength, and overall regularity.
 
 
-```{r radarplot, fig.cap="Characteristics of top singers", fig.align='center', fig.height=5, fig.width=7}
+```{r radarplot, fig.cap="Characteristics of top singers", fig.height=5, fig.width=7}
 Artist_attributes <- new_data1 %>%
   select(track_popularity, track_artist, energy, danceability, playlist_genre) %>%
   group_by(track_artist)%>%
@@ -202,10 +204,9 @@ albums_valence %>%
   kable_styling(latex_options = c("striped"), full_width = F)
 ```
 
-
 Second, we make a density plot to show the ranges and densities of valence of each album. From the following figure, we can find that "Everyday Life" has the widest range of valence, that is to say, this album contains abundant emotions. Meanwhile, "A Rush of Blood to the Head" has a narrow range of valence, and the valence density centered at the area with lower valence values. It's probably that the audience would feel negative emotions like sad, depressed and angry when they listening to this album. This finding surprised us because the "A Rush of Blood to the Head" is the second best album in ["The Coldplay Albums Ranked"](The Coldplay Albums Ranked). So we decided to look more in depth next.
 
-```{r coldplay-valence, fig.align='center', fig.height=3.5}
+```{r coldplay-valence, fig.height=3.5}
 coldplay %>% 
   group_by(album_name) %>% 
   filter(!album_name %in% c("Ghost Stories Live 2014", "Live in Buenos Aires", "Love in Tokyo", "A Head Full of Dreams Tour Edition")) %>% # remove the duplicate ones
@@ -235,7 +236,7 @@ rush_bing %>%
   kable_styling(latex_options = c("striped", "hold_position"), full_width = F)
 ```
 
-```{r sentiment-plot, fig.align='center', fig.height=3.5}
+```{r sentiment-plot, fig.height=3.5}
 rush_bing %>% 
   count(word, sentiment, sort = TRUE) %>% 
   filter(n >= 2) %>% 
@@ -255,7 +256,6 @@ rush_afinn <- rush %>%
 
 rush_sentiment_value <- round(mean(rush_afinn$value), digits = 2)
 ```
-
 
 ## Analyse the audio features
 
@@ -285,7 +285,7 @@ In this part, we analysed the audio features of all the songs in our dataset. Th
 
 - valence: A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
 
-```{r features-genre, fig.align='center', fig.height=5}
+```{r features-genre, fig.height=5}
 spotify_songs_features <- spotify_songs %>% 
   mutate(duration_s = round(duration_ms / 1000)) %>% 
   select(-duration_ms)
@@ -323,7 +323,7 @@ names(COLORS) = c('latin', 'r&b',
 
 ```
 
-```{r barplot, fig.cap="Average valence by Music Genre", fig.align='center', fig.height=3.5}
+```{r barplot, fig.cap="Average valence by Music Genre", fig.height=3.5}
 ggplot(new_data1, aes(reorder(playlist_genre, valence), y = valence)) + 
   geom_boxplot(aes(fill = playlist_genre)) +
   coord_flip() +
@@ -337,7 +337,7 @@ ggplot(new_data1, aes(reorder(playlist_genre, valence), y = valence)) +
 
 The second plot describes the relationship between Music Genre and Energy. Energy is a measure from 0.0 to 1.0 and representatives a conceptual measure of intensity and activity. It can be clearly seen from the plot that EDM has the highest value of Energy, while R B's value of Energy is the lowest, which also shows the style of these two Music Genres. Mostly, EDM will make people feel fast, loud, and noisy when listening. However, R&B is mainly lyrical, slow and quiet, which bring less energy for the listeners. Similarly, Rock has always been famous for its flexible and bold expression and passionate music rhythm, and its ranking is only inferior to EDM.
 
-```{r energy, fig.cap="Average Energy by Music Genre", fig.align='center', fig.height=3.5}
+```{r energy, fig.cap="Average Energy by Music Genre", fig.height=3.5}
 ggplot(new_data1, aes(reorder(playlist_genre, energy), y = energy)) + 
   geom_boxplot(aes(fill = playlist_genre)) +
   coord_flip() +
@@ -352,7 +352,7 @@ Finally, this plot describes the relationship between Music Genres and Speechles
 
 Focus on the plot, it is no doubt that Rap is bound to occupy the first place, because the characteristic of Rap is to quickly tell a series of rhyming lyrics against the background of mechanical rhythmic sound. What is worth noting is that Rock and POP are the lowest, which shows that those two genres tend to use the melody or rhythm of music to affect the audience, rather than using the lyrics.
 
-```{r speechiness, fig.cap="Average speechiness by Music Genre", fig.align='center', fig.height=3.5}
+```{r speechiness, fig.cap="Average speechiness by Music Genre", fig.height=3.5}
 ggplot(new_data1, aes(reorder(playlist_genre, speechiness), y = speechiness)) + 
   geom_boxplot(aes(fill = playlist_genre)) +
   coord_flip() +
@@ -385,7 +385,7 @@ The following figure shows the average popularity of songs released in different
 (4) The rap music has been popular since the 1960s, and the oldest rap music is still the most popular ones. And the songs released in the 2000s have the lowest popularity now. 
 (5) The popularity of rock music released in different time period are quite stable. While the ones released from the 1960s to the 1990s are more popular than the others.
 
-```{r time-popular, fig.align='center', fig.height=3.5}
+```{r time-popular, fig.width=5, fig.height=5}
 spotify_songs <- spotify_songs %>% 
   mutate(year = substr(track_album_release_date, 1, 4))
 
@@ -403,13 +403,12 @@ rename(time_popular, genre = `as.character(value)`,
 
 time_popular %>% 
   ggplot() +
-  geom_col(aes(x = decade, y = mean_popularity, 
-               fill = decade), alpha = 0.5) + 
+  geom_col(aes(x = genre, y = mean_popularity, 
+               fill = genre), alpha = 0.5) + 
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank()) + 
-  facet_wrap(~genre)
-
+  facet_wrap(~decade, ncol = 2)
 ```
 
 ## Correlation between popularity and audio features
@@ -433,7 +432,7 @@ num <- corrplot(corr, method = "number", type="lower")
 
 After describing the unique information about audio features, now we pay attention to exploring whether these audio features contribute to a higher popularity. First we plotted each audio feature of the songs and the popularity in the following figure to observe. It shows that liveness has a negative relationship with popularity and we also find that there's no absolute relationship between valence and popularity. A higher valence doesn't necessarily make a song more popular.This is consistent with our sentiment analysis.
 
-```{r popularity-against-features, fig.align='center'}
+```{r popularity-against-features}
 dance_popular <- spotify_songs %>% 
   ggplot() + 
   geom_point(aes(x = danceability, y = track_popularity), color = "#E69F00", alpha = 0.05)
@@ -503,31 +502,4 @@ Finally, Although Coldplay, as one of the representative rock artist, their work
 The R packages we used in this report: 
 _@ggplot2, @skimr, @corrplot2017, @ggthemes, @DT, @devtools, @readr, @tidyverse, @dplyr, @lubridate, @knitr, @kableExtra, @broom, @gridExtra, @genius, @tidytext, @textdata, @spotifyr,  @ggridges ._
 
-# Reference
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# References
