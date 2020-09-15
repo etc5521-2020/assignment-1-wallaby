@@ -6,7 +6,6 @@ author:
   - Helen Evangelina
   - Rahul Bharadwaj
 date: "`r Sys.Date()`"
-bibliography: references.bib
 output: 
   html_document
 ---
@@ -141,7 +140,7 @@ new_data1 <- newdata %>%
   filter(playlist_genre == "latin" | playlist_genre == "r&b" | playlist_genre == "pop" |
            playlist_genre == "rap" | playlist_genre == "rock" | playlist_genre == "edm")
 
-ggpubr::ggarrange(vis_dat(new_data1), vis_miss(new_data1), ncol = 1)
+grid.arrange(vis_dat(new_data1), vis_miss(new_data1), ncol = 1)
 ```
 
 * The above figure gives an overview of the columns necessary for our analysis. This data is clean with less than 0.1% missing data and is ready for analysis.
@@ -386,7 +385,6 @@ ggplot(new_data1, aes(reorder(playlist_genre, energy), y = energy)) +
 
 * The second plot above describes the relationship between Music Genre and Energy. Energy is a measure from 0.0 to 1.0 and represents a conceptual measure of intensity and activity. It can be clearly seen from the plot that EDM has the highest value of Energy, while Rythm and Bass value of Energy is the lowest, which also shows the style of these two Music Genres. Mostly, EDM will make people feel energized, loud, and noisy when listening. However, R&B is mainly lyrical, slow and quiet, which bring less energy for the listeners. Similarly, Rock has always been famous for its flexible and bold expression and passionate music rhythm and its ranking is only inferior to EDM.
 
-
 * Finally, the above plot describes the relationship between Music Genres and Speechiness. Speechiness detects the presence of spoken words in a track. If more words or sentences are said in a song, the closer to 1.0 the attribute value. That attribute is very interesting, which indicates whether the artists tends to express ideas by describing the lyrics in music or writing the melody of music to express their feelings.
 
 ```{r speechiness, fig.cap="Average Speechiness by Music Genre", fig.height=3.5}
@@ -462,7 +460,9 @@ time_popular %>%
 
 The correlation of song features is very helpful for us to explore the reasons for the popularity of music artworks. We can see from the correlation plot that the characteristics of each song are specific and unique, but we can summarize them with ten musical attributes. Meanwhile, there are three types of relation between different attributes: Negative correlation, positive correlation or completely irrelevant. This is very important for us to analyze the properties of music artworks in the future. 
 
-For example, if a song has a strong energy attribute, it must also have a high value of loudness, and the probability of not belonging to acoustic is also very high. If a person like songs that are more active or have higher valence, he should explore his some potential favorite songs of high danceability, high energy, and contains more vocal content. It is easy to see that the role of correlation plot is very meaningful. It can play an irreplaceable role in the analysis of songs or the selection of the favorite attributes of songs. And the rest of effects can be explored later.
+For example, if a song has a strong energy attribute, it must also have a high value of loudness, and the probability of not belonging to acoustic is also very high. If a person likes songs that are more active or have higher valence, he should explore some potential favorite songs of high danceability, high energy, and contains more vocal content. It is easy to see that the role of correlation plot is very meaningful. It can play an irreplaceable role in the analysis of songs or the selection of the favorite attributes of songs and the rest of effects can be explored later.
+
+* We can build upon the correlation plot displayed in Data Description. The plot below shows a numerical display of correlation just like the shades that was produced in the previous plot.
 
 ```{r cor, fig.cap='Correlation between Audio Features', fig.align='center', fig.height=5}
 options(repr.plot.width = 30, repr.plot.height = 20)
@@ -473,7 +473,7 @@ num <- corrplot(corr, method = "number", type="lower")
 
 ### Relationship between Popularity and a certain Audio Feature
 
-After describing the unique information about audio features, now we pay attention to exploring whether these audio features contribute to a higher popularity. First we plotted each audio feature of the songs and the popularity in the following figure to observe. It shows that liveness has a negative relationship with popularity and we also find that there's no absolute relationship between valence and popularity. A higher valence doesn't necessarily make a song more popular.This is consistent with our sentiment analysis.
+After describing the unique information about audio features, now we pay attention to exploring whether these audio features contribute to a higher popularity. First we plot each audio feature of the songs and the popularity in the following figure.
 
 ```{r popularity-against-features, fig.cap='Popularity vs Audio Feature', fig.height=4, fig.width=9}
 dance_popular <- spotify_songs %>% 
@@ -495,7 +495,7 @@ valence_popular <- spotify_songs %>%
 energy_popular <- spotify_songs %>% 
   ggplot() + 
   geom_point(aes(x = energy, y = track_popularity), color = "#56B4E9", alpha = 0.05) +
-  xlab("Danceability") + ylab("Track Popularity")
+  xlab("Energy") + ylab("Track Popularity")
 
 instrumentalness_popular <- spotify_songs %>% 
   ggplot() + 
@@ -522,7 +522,13 @@ grid.arrange(dance_popular, loudness_popular, valence_popular,
              speechiness_popular, duration_popular, ncol = 4)
 ```
 
-Also, We are not sure whether those above dot plots can directly reveal the relationship between these popularity and audio features. So we pay attention to exploring whether these audio features contribute to a higher popularity using a linear regression model just in case. Here we filtered the songs with a popularity greater than 0, since 0 popularity value does not make sense in this model. And the following table shows all the audio features with a p-value less than 0.05. We can draw a conclusion that danceability and valence contribute most to a higher popularity. Acousticness, key, loudness, mode and tempo also have positive relationship with popularity. While energy, instrumentalness, liveness and speechiness have negative relationship with popularity, with is similar with those dot plots conclusion.
+* It shows that liveness has a negative relationship with popularity and we also find that there's no absolute relationship between valence and popularity. A higher valence doesn't necessarily make a song more popular.This is consistent with our sentiment analysis.
+
+* Also, We are not sure whether those above dot plots can directly reveal the relationship between these popularity and audio features. So we pay attention to exploring whether these audio features contribute to a higher popularity using a linear regression model just in case.
+
+* Here we filtered the songs with a popularity greater than 0, since 0 popularity value does not make sense in this model. And the following table shows all the audio features with a p-value less than 0.05. We can draw a conclusion that danceability and valence contribute most to a higher popularity.
+
+* Acousticness, key, loudness, mode and tempo also have positive relationship with popularity. While energy, instrumentalness, liveness and speechiness have negative relationship with popularity, with is similar with those dot plots conclusion.
 
 ```{r features-popularity}
 popular_songs <- spotify_songs %>% 
@@ -541,18 +547,116 @@ kable(result, digits = 2, caption = "lm (popularity ~ features)", booktabs = T,
                 position = "center")
 ```
 
+* Using geom_smooth, we can get a clear picture of how popularity is affected by different audio features. We can observe how each audio feature trends with increasing popularity,
+
+```{r geomsmooth, fig.cap='Popularity vs Audio Feature using Smooth Curves', fig.height=4, fig.width=9}
+dance_smooth <- spotify_songs %>% 
+  ggplot(aes(x = track_popularity, y = danceability)) + 
+  geom_point(color = "#E69F00", alpha = 0.05) +
+  geom_smooth(color = "black") +
+  xlab("Track Popularity") + ylab("Danceability")
+
+loudness_smooth <- spotify_songs %>% 
+  ggplot(aes(x = track_popularity, y = loudness)) + 
+  geom_point(color = "#009E73", alpha = 0.05) +
+  geom_smooth(color = "black") +
+  xlab("Track Popularity") + ylab("Loudness")
+
+valence_smooth <- spotify_songs %>% 
+  ggplot(aes(x = track_popularity, y = valence)) + 
+  geom_point(color = "#CC79A7", alpha = 0.05) +
+  geom_smooth(color = "black") +
+  xlab("Track Popularity") + ylab("Valence")
+
+energy_smooth <- spotify_songs %>% 
+  ggplot(aes(x = track_popularity, y = energy)) + 
+  geom_point(color = "#56B4E9", alpha = 0.05) +
+  geom_smooth(color = "black") +
+  xlab("Track Popularity") + ylab("Energy")
+
+instrumental_smooth <- spotify_songs %>% 
+  ggplot(aes(x = track_popularity, y = instrumentalness)) + 
+  geom_point(color = "#0072B2", alpha = 0.05) +
+  geom_smooth(color = "black") +
+  xlab("Track Popularity") + ylab("Instrumentalness")
+
+liveness_smooth <- spotify_songs %>% 
+  ggplot(aes(x = track_popularity, y = liveness)) + 
+  geom_point(color = "#D55E00", alpha = 0.05) +
+  geom_smooth(color = "black") +
+  xlab("Track Popularity") + ylab("Liveness")
+
+speechiness_smooth <- spotify_songs %>% 
+  ggplot(aes(x = track_popularity, y = speechiness)) + 
+  geom_point(color = "#C4961A", alpha = 0.05) +
+  geom_smooth(color = "black") +
+  xlab("Track Popularity") + ylab("Speechiness")
+
+duration_smooth <- spotify_songs %>% 
+  ggplot(aes(x = track_popularity, y = duration_ms)) + 
+  geom_point(color = "#C3D7A4", alpha = 0.05) +
+  geom_smooth(color = "black") +
+  xlab("Track Popularity") + ylab("Duration")
+
+grid.arrange(dance_smooth, loudness_smooth, valence_smooth, 
+             energy_smooth, instrumental_smooth, liveness_smooth, 
+             speechiness_smooth, duration_smooth, ncol = 4)
+```
+
+* We can observe that most of the audio features have almost no relation with popularity except for Energy and Instrumentalness which negatively affect popularity while Danceability positively affect popularity. This trend is observed for tracks that have a popularity greater than 50.
+
+* This leads us to extend the analysis to pursue danceabilty and check which music genre, and artists are in line with this trend. The next analysis pursues our questiton as to what the unique selling point for each selected artist is.
+
 # Conclusion
 
-After Exploratory Data Analysis, our group got the answers to those questions. 
-First of all, there is a positive or negative correlation between audio features and track popularity. However, as we all know, the value of a art work can't be measured only by numbers. The popularity of music artworks depends more on the artist's own popularity, creative talent or singing ability, or external factors such as world trends. The probability of success by deliberately catering to audio features and creating specific songs is not sufficient. 
+* Firstly, there is a positive or negative correlation between audio features and track popularity. However, as we all know, the value of a art work can't be measured only by numbers. The popularity of music artworks depends more on the artist's own popularity, creative talent or singing ability, or external factors such as world trends. The probability of success by deliberately catering to audio features and creating specific songs is not sufficient. 
 
-Secondly, each top artist has its own artistic characteristics, and will be loved by specific groups of people. Top artists do not create music artworks according to the trend, instead, they will create their own trend for the world. 
+* Secondly, each top artist has its own artistic characteristics, and will be loved by specific groups of people. Top artists do not create music artworks according to the trend, instead, they will create their own trend for the world. 
 
-As for the six kinds of music genres that can stand out from the modern music, there are also their own characteristics inside. It's hard to understand the reasons for their success because of their unique styles. What we can do is to determine the genre of each song according to its style. 
+* As for the six kinds of music genres that can stand out from the modern music, there are also their own characteristics inside. It's hard to understand the reasons for their success because of their unique styles. What we can do is to determine the genre of each song according to its style. 
 
-Finally, Although Coldplay, as one of the representative rock artist, their works contain more negative emotions. This is also in line with the rebellious and critical spirit of rock music, and this spirit has been respected by young people of different races all the time. They stick to their own style, try unconventional music routines as far as possible, and point to people's hearts with straightforward, profound and moving melody. This also confirms our analysis that Coldplay songs' lyrics convey negative emotions, which does not affect their popularity, but makes them top artists. In conclusion, track popularity will pay more attention to the singer's own ability and attitude, rather than audio features. The biggest role of audio features is to reflect the singer's music style, rather than increase popularity.
+* Although Coldplay is one of the representative rock artist, their works contain more negative emotions. This is also in line with the rebellious and critical spirit of rock music, and this spirit has been respected by young people of different races all the time. They stick to their own style, try unconventional music routines as far as possible, and point to people's hearts with straightforward, profound and moving melody. This also confirms our analysis that Coldplay songs' lyrics convey negative emotions, which does not affect their popularity, but makes them top artists.
 
-The R packages we used in this report: 
-_@ggplot2, @skimr, @corrplot2017, @ggthemes, @DT, @devtools, @readr, @tidyverse, @dplyr, @lubridate, @knitr, @kableExtra, @broom, @gridExtra, @genius, @tidytext, @textdata, @spotifyr,  @ggridges ._
+* In conclusion, track popularity will pay more attention to the singer's own ability and attitude, rather than audio features. The biggest role of audio features is to reflect the singer's music style, rather than increase popularity.
 
 # References
+
+* Arnold, Jeffrey B. 2019. Ggthemes: Extra Themes, Scales and Geoms for ’Ggplot2’. https://CRAN.R-project.org/package=ggthemes.
+
+* Auguie, Baptiste. 2017. GridExtra: Miscellaneous Functions for "Grid" Graphics. https://CRAN.R-project.org/package=gridExtra.
+
+* Grolemund, Garrett, and Hadley Wickham. 2011. “Dates and Times Made Easy with lubridate.” Journal of Statistical Software 40 (3): 1–25. http://www.jstatsoft.org/v40/i03/.
+
+* Hvitfeldt, Emil. 2020. Textdata: Download and Load Various Text Datasets. https://CRAN.R-project.org/package=textdata.
+
+* Parry, Josiah, and Nathan Barr. 2020. Genius: Easily Access Song Lyrics from Genius.com. https://CRAN.R-project.org/package=genius.
+
+* Robinson, David, Alex Hayes, and Simon Couch. 2020. Broom: Convert Statistical Objects into Tidy Tibbles. https://CRAN.R-project.org/package=broom.
+
+* Silge, Julia, and David Robinson. 2016. “Tidytext: Text Mining and Analysis Using Tidy Data Principles in R.” JOSS 1 (3). https://doi.org/10.21105/joss.00037.
+
+* Thompson, Charlie. 2017. “Spotifyr: R Wrapper for the’Spotify’Web Api.” https://github.com/charlie86/spotifyr.
+
+* Tierney, Nicholas. 2017. “Visdat: Visualising Whole Data Frames.” JOSS 2 (16): 355. https://doi.org/10.21105/joss.00355.
+
+* Waring, Elin, Michael Quinn, Amelia McNamara, Eduardo Arino de la Rubia, Hao Zhu, and Shannon Ellis. 2020. Skimr: Compact and Flexible Summaries of Data. https://CRAN.R-project.org/package=skimr.
+
+* Wei, Taiyun, and Viliam Simko. 2017. R Package "Corrplot": Visualization of a Correlation Matrix. https://github.com/taiyun/corrplot.
+
+* Wickham, Hadley. 2016. Ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York. https://ggplot2.tidyverse.org.
+
+* Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy D’Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019. “Welcome to the tidyverse.” Journal of Open Source Software 4 (43): 1686. https://doi.org/10.21105/joss.01686.
+
+* Wickham, Hadley, Romain François, Lionel Henry, and Kirill Müller. 2020. Dplyr: A Grammar of Data Manipulation. https://CRAN.R-project.org/package=dplyr.
+
+* Wickham, Hadley, Jim Hester, and Winston Chang. 2020. Devtools: Tools to Make Developing R Packages Easier. https://CRAN.R-project.org/package=devtools.
+
+* Wickham, Hadley, Jim Hester, and Romain Francois. 2018. Readr: Read Rectangular Text Data. https://CRAN.R-project.org/package=readr.
+
+* Wilke, Claus O. 2020. Ggridges: Ridgeline Plots in ’Ggplot2’. https://CRAN.R-project.org/package=ggridges.
+
+* Xie, Yihui. 2020. Knitr: A General-Purpose Package for Dynamic Report Generation in R. https://yihui.org/knitr/.
+
+* Xie, Yihui, Joe Cheng, and Xianying Tan. 2020. DT: A Wrapper of the Javascript Library ’Datatables’. https://CRAN.R-project.org/package=DT.
+
+* Zhu, Hao. 2019. KableExtra: Construct Complex Table with ’Kable’ and Pipe Syntax. https://CRAN.R-project.org/package=kableExtra.
