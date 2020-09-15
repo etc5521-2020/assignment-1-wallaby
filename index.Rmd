@@ -406,7 +406,7 @@ ggplot(new_data1, aes(reorder(playlist_genre, speechiness), y = speechiness)) +
 
 ## Music Genre and their Popularity - by Decade of release date
 
-After reviewing the internal relations between audio features and Music Genres, now we can discuss about the Music Genres in detail. The table below shows the distribution of each genre in this dataset. The most frequently appeared genre is "edm", while the genre "rock" appeared least.
+* After reviewing the internal relations between Audio Features and Music Genres, now we can discuss about the Music Genres in detail. The table below shows the distribution of each genre in this dataset. The most frequently appeared genre is "edm", while the genre "rock" appeared least.
 
 ```{r genres-summary}
 spotify_songs %>% 
@@ -416,12 +416,7 @@ spotify_songs %>%
   kable_styling(latex_options = c("striped", "hold_position"), full_width = F, position = "center")
 ```
 
-The following figure shows the average popularity of songs released in different time. To show the result clearly and for convenience of comparison, we divided the result for each genre. 
-(1) The edm music has been popular since the 1970s, and the popularity of edm music released in the past 50 years are 40 or even less. This means the edm music is not the mainstream music type nowadays. 
-(2) The latin and pop music have been popular since the 1960s. The 1970s was the golden time for the latin songs, while the 1960s and 1970s were the golden time for the pop music. These old songs are still popular now. 
-(3) The r&b music went through ups and downs. The songs released from the 1980s to the 2000s are less popular than others. 
-(4) The rap music has been popular since the 1960s, and the oldest rap music is still the most popular ones. And the songs released in the 2000s have the lowest popularity now. 
-(5) The popularity of rock music released in different time period are quite stable. While the ones released from the 1960s to the 1990s are more popular than the others.
+The following figure shows the average popularity of songs released in different time. To show the result clearly and for convenience of comparison, we divided the result for each genre.
 
 ```{r time-popular, fig.cap='Genre Popularity by Decade', fig.width=5, fig.height=5}
 spotify_songs <- spotify_songs %>% 
@@ -450,6 +445,16 @@ time_popular %>%
   ggtitle("Popularity by Decade") +
   facet_wrap(~decade, ncol = 2)
 ```
+
+(1) EDM music emerged in the 1970s, and its popularity is 40 or even less. This shows EDM music is not the mainstream music nowadays and is restricted to a smaller group.
+
+(2) Latin and pop music have been popular since the 1960s. The 1970s was the golden time for latin songs, while the 1960s and 1970s were the golden time for pop music. These old songs are popular even today!
+
+(3) R&B music went through ups and downs. The songs released from the 1980s to the 2000s are less popular than others. 
+
+(4) Rap music has been popular since the 1960s, and the oldest rap music is still the most popular ones. The songs released in the 2000s have the lowest popularity now. 
+
+(5) The popularity of rock music released in different time period are quite stable. While the ones released from the 1960s to the 1990s are more popular than the others.
 
 ## Correlation between Popularity and Audio Features
 
