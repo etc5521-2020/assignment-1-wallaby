@@ -207,17 +207,15 @@ Artist_attributes
 
 ## Analyzing our Favorite Artist - Coldplay
 
-In this part, we want to take one artist for example to do some detailed exploratory analysis using the "spotifyr" package. Here we choose the Coldplay, our favorate artist. 
+* In this part, we want to take one artist for example to do some detailed exploratory analysis using the "spotifyr" package. Here we choose the Coldplay, our favorite artist. 
 
-First, we loaded all the albums of Coldplay available on spotify and droped the duplicate ones (some live tour albums are duplicate with the existed ones). We calculated the average valence of each album. The results are shown in the following table. According to [the spotify tracks documentation](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/), _The valence variable is measured from 0.0 to 1.0, describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry)._
-The highest valence of these albums is 0.3, and the lowest valence is 0.18, which means the songs of Coldplay usually sounds more negative than positive for the audience.
+* First, we loaded all the albums of Coldplay available on spotify and dropped the duplicate ones (some live tour albums are duplicate with the existed ones). We calculated the average valence of each album. The results are shown in the following table.
 
 ```{r}
 Sys.setenv(SPOTIFY_CLIENT_ID = "d11442c742ef4d30bc6ac5f7d16ad9a3")
 Sys.setenv(SPOTIFY_CLIENT_SECRET = "29bf6f95fe894329ba9204cd9e72b68e")
 access_token <- get_spotify_access_token()
 ```
-
 
 ```{r coldplay-album}
 coldplay <- get_artist_audio_features("coldplay")
@@ -238,7 +236,10 @@ albums_valence %>%
   kable_styling(latex_options = c("striped"), full_width = F)
 ```
 
-Second, we make a density plot to show the ranges and densities of valence of each album. From the following figure, we can find that "Everyday Life" has the widest range of valence, that is to say, this album contains abundant emotions. Meanwhile, "A Rush of Blood to the Head" has a narrow range of valence, and the valence density centered at the area with lower valence values. It's probably that the audience would feel negative emotions like sad, depressed and angry when they listening to this album. This finding surprised us because the "A Rush of Blood to the Head" is the second best album in ["The Coldplay Albums Ranked"](The Coldplay Albums Ranked). So we decided to look more in depth next.
+* According to [the spotify tracks documentation](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/), _The valence variable is measured from 0.0 to 1.0, describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry)._
+The highest valence of these albums is 0.3, and the lowest valence is 0.18, which means the songs of Coldplay usually sounds more negative than positive for the audience.
+
+* Second, we make a density plot to show the ranges and densities of valence of each album.
 
 ```{r coldplay-valence, fig.cap='Valence Density of Coldplay Albums', fig.height=3.5}
 coldplay %>% 
@@ -251,11 +252,9 @@ coldplay %>%
   ggtitle("The Valence Density of Coldplay's albums")
 ```
 
-Lastly, we analysed the sentiment of this album to see whether the valence of an album is associated with the lyrics. The average sentiment value of this album is -0.47 by the "afinn" lexicon. And we also analysed the sentiment of lyrics using the "bing" lexicon. The following table shows the most frequent words and their sentiment in this album. In addition, the figure below shows more intuitively the frequency of words which appears more than once. We can easily find that the negative words appear more than the positive ones.
+*  From the above figure, we can find that "Everyday Life" has the widest range of valence, that is to say, this album contains abundant emotions. Meanwhile, "A Rush of Blood to the Head" has a narrow range of valence, and the valence density centered at the area with lower valence values. It's probably that the audience would feel negative emotions like sad, depressed and angry when they listening to this album. This finding surprised us because "A Rush of Blood to the Head" is the second best album in ["The Coldplay Albums Ranked"](The Coldplay Albums Ranked). So we decided to look more in depth next.
 
-As a result, we can say for sure that, both in terms of sound and lyrics, this album conveyed negative emotions. But this doesn't affect that people think "A Rush of Blood to the Head" is one of the best albums of the Coldplay. It can be seen that the audience's love for a album is not entirely determined by the album's positiveness. 
-
-```{r my favorate-album-lyrics, cache=TRUE}
+```{r my-favorite-album-lyrics, cache=TRUE}
 rush <- genius_album(artist = "coldplay", album = "a rush of blood to the head")
 
 rush_bing <- rush %>% 
@@ -271,6 +270,8 @@ rush_bing %>%
   kable_styling(latex_options = c("striped", "hold_position"), full_width = F)
 ```
 
+* Lastly, we analyzed the sentiment of this album to see whether the valence of an album is associated with the lyrics. The average sentiment value of this album is -0.47 by the "afinn" lexicon. And we also analysed the sentiment of lyrics using the "bing" lexicon. The above table shows the most frequent words and their sentiment in this album. In addition, the figure below shows more intuitively the frequency of words which appears more than once. We can easily find that the negative words appear more than the positive ones.
+
 ```{r sentiment-plot, fig.height=3.5}
 rush_bing %>% 
   count(word, sentiment, sort = TRUE) %>% 
@@ -282,6 +283,8 @@ rush_bing %>%
   facet_wrap(~sentiment, scales = "free_y") + 
   ggtitle("sentiment of the album 'A rush of blood to the head'")
 ```
+
+* As a result, we can say for sure that, both in terms of sound and lyrics, this album conveyed negative emotions. But this doesn't affect that people think "A Rush of Blood to the Head" is one of the best albums of Coldplay. It can be seen that the audience's love for a album is not entirely determined by the album's positiveness but rather how well they can relate and resonate to emotions in the songs. This is proof that people use music for all emotional experiences and not just to have fun or feel refreshed! 
 
 ```{r sentiment-value}
 rush_afinn <- rush %>% 
