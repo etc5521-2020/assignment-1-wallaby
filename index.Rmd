@@ -33,6 +33,7 @@ library(corrplot)
 library(ggthemes)
 library(spotifyr)
 library(ggridges)
+library(visdat)
 ```
 
 [This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
@@ -96,6 +97,11 @@ After reading the data on RStudio, our team used the skim() function to show the
 
 ```{r data-structure}
 skimr::skim(spotify_songs)
+```
+
+```{r}
+spotify_songs %>%
+  vis_miss(sort_miss = TRUE)
 ```
 
 
@@ -292,7 +298,7 @@ spotify_songs_features <- spotify_songs %>%
 
 feature_names <- names(spotify_songs_features)[13:24]
 
-spotify_songs_features %>%
+p <- spotify_songs_features %>%
   select(c("playlist_genre", feature_names)) %>% 
   pivot_longer(cols = feature_names) %>%
   ggplot(aes(x = value)) +
@@ -303,6 +309,9 @@ spotify_songs_features %>%
   theme(axis.text.y = element_blank(), 
         axis.ticks = element_blank()) + 
   scale_color_brewer(palette = "Accent")
+
+library(plotly)
+ggplotly(p)
 ```
 
 The next three box plots are to find out the differences of music attributes between different Music Genres. Firstly, the relationship between color and Music Genre is established, and put into the same tibble, call "COLORS". This method allows different Music Genre can be clearly distinguished by different colors, and then the specific characteristic of each Music Genre can be judged from those box plots.
@@ -470,6 +479,7 @@ duration_popular <- spotify_songs_features %>%
 grid.arrange(dance_popular, loudness_popular, valence_popular, 
              energy_popular, instrumentalness_popular, liveness_popular, 
              speechiness_popular, duration_popular, ncol = 3)
+time_popular
 ```
 
 Also, We are not sure whether those above dot plots can directly reveal the relationship between these popularity and audio features. So we pay attention to exploring whether these audio features contribute to a higher popularity using a linear regression model just in case. Here we filtered the songs with a popularity greater than 0, since 0 popularity value does not make sense in this model. And the following table shows all the audio features with a p-value less than 0.05. We can draw a conclusion that danceability and valence contribute most to a higher popularity. Acousticness, key, loudness, mode and tempo also have positive relationship with popularity. While energy, instrumentalness, liveness and speechiness have negative relationship with popularity, with is similar with those dot plots conclusion.
@@ -489,6 +499,233 @@ kable(result, digits = 2, caption = "lm(popularity~features)", booktabs = T, ali
   kable_styling(latex_options = c("striped", "hold_position"), full_width = F, position = "center")
 ```
 
+# Music characteristics over time
+Explore the music characteristics over time. How is it changing? And then explore top 5 artists (according to track_popularity) in terms of the music characteristics over time – is the music characteristic for one artist changing over time?
+
+(put here or on the introduction?)
+ow they expand on what has been done already, why these would be interesting to pursue, and how it broadens the scope of the original analysis.
+analysing the trend of music characeteirstics overtime is an interesting thing to look at as
+and as previous team has analysed the correlation of music characteristics, i think it would be beneficial to also look at how the music characteristics are changing over time. As music evolves, we wanna look at how the characteristics evolve. Are the music characteristics in 1957 similar to those in 2019? 
+
+
+To answer the research question "How is the music characteristic over time and how is it changing?", we 
+```{r}
+characteristics_mean <- spotify_songs %>%
+ select(danceability,
+        acousticness,
+         duration_ms,
+        energy,
+        instrumentalness,
+        key,
+        liveness,
+        loudness,
+        mode,
+        speechiness,
+        tempo,
+        valence,
+        year) %>%
+  pivot_longer(-year, names_to = "characteristics",
+               values_to = "values") %>%
+  group_by(year,
+           characteristics) %>%
+  summarise(mean = mean(values)) %>%
+    group_by(year)
+
+characteristics_mean$year <- as.Date(characteristics_mean$year, format = "%Y")
+```
+
+```{r music-characteristics}
+characteristics_mean %>%
+  group_by(year) %>%
+  ggplot() +
+  geom_line(aes(x = year, 
+                y = mean,
+                color = characteristics)) +
+  facet_wrap(~characteristics, scales = "free") +
+  theme(legend.position = "none")
+```
+
+Now, the music characteristics might change because of the emerging of new types and more modern music. But is the music characteristic also changing for an artist?
+it would be interesting to look at the trend to see if one specific artist also has a shift in his music characteristics. Is the same artist making the same kind of music through time?
+
+Next, we are going to look at the top five artists and look at their music characteristics trend over time. We are not using the `track_popularity` to determine the top five artists here as some artists that are in the top five only have songs in a certain year, thus we are not able to compare the music characteristics over time. Therfore, we are using number of `track_name` instead.
+
+what is the genre of that artist and see if it correlate
+
+```{r}
+topartists <- spotify_songs %>% 
+  group_by(track_artist) %>%
+  summarize(Total = n_distinct(track_name)) %>% 
+  arrange(desc(Total))  
+
+head(topartists, 5) %>%
+  kable()
+```
+Unlike the other four artists, Queen has a different timeline. Therefore, for the purpose of having a clear visualisation, we split Queen with the others.
+
+```{r}
+top4artists <- spotify_songs %>%
+  filter(track_artist == c("Martin Garrix", "David Guetta", "Logic", "Hardwell")) %>%
+  select(danceability,
+        acousticness,
+        energy,
+        instrumentalness,
+        key,
+        liveness,
+        loudness,
+        mode,
+        speechiness,
+        tempo,
+        duration_ms,
+        valence,
+        year,
+        track_artist)
+
+top4_components <- top4artists %>%
+  pivot_longer(danceability:valence, names_to = "components",
+               values_to = "values") %>%
+  group_by(year,
+           track_artist,
+           components) %>%
+  summarise(mean = mean(values))
+
+top4_components$year <- as.Date(top4_components$year, format = "%Y")         
+```
+
+```{r}
+top4_components %>%
+  group_by(year, track_artist) %>%
+  ggplot() +
+  geom_line(aes(x = year, 
+                y = mean,
+                color = track_artist)) +
+  facet_wrap(~components, scales = "free")
+```
+
+```{r}
+queen <- spotify_songs %>%
+  filter(track_artist == "Queen") %>%
+  select(danceability,
+        acousticness,
+        energy,
+        instrumentalness,
+        key,
+        liveness,
+        loudness,
+        mode,
+        speechiness,
+        tempo,
+        duration_ms,
+        valence,
+        year,
+        track_artist)
+
+queen_components <- queen %>%
+  pivot_longer(danceability:valence, names_to = "components",
+               values_to = "values") %>%
+  group_by(year,
+           components) %>%
+  summarise(mean = mean(values))
+
+queen_components$year <- as.Date(queen_components$year, format = "%Y")         
+```
+
+```{r}
+queen_components %>%
+  group_by(year) %>%
+  ggplot() +
+  geom_line(aes(x = year, 
+                y = mean),
+            color = "red") +
+  facet_wrap(~components, scales = "free")
+```
+
+i wanna look at the relo between track artist and their musical characteristics(x as artist, y as characteristics?)
+
+can also look at relationship between year (decade) and characteristics and make scatter plot matrix coloured by artists.
+```{r}
+a <- top5artists %>%
+  mutate(decade = round(as.numeric(year) - 4.5, -1)) %>%
+   pivot_longer(danceability:valence, names_to = "characteristics",
+               values_to = "values")
+a$year <- as.Date(a$year, format = "%Y")
+
+aa <- characteristics_topartists %>%
+  group_by(year, track_artist)
+
+ggplot() +
+  geom_line(data = aa,
+              aes(x = year, 
+                y = mean,
+                color = track_artist)) +
+  geom_point(data = a,
+             aes(x = year,
+                 y = values,
+             color = track_artist)) +
+  facet_wrap(~characteristics, scales = "free")
+```
+
+the interesting one here is valence - so we look at it closer.
+
+
+TO see if the characteristics are changing over time, can look at the correlation between the char and year.
+
+```{r}
+char_long <- spotify_songs %>%
+  select(danceability,
+        acousticness,
+         duration_ms,
+        energy,
+        instrumentalness,
+        key,
+        liveness,
+        loudness,
+        mode,
+        speechiness,
+        tempo,
+        valence,
+        year) %>%
+  pivot_longer(-year, names_to = "characteristics",
+               values_to = "values")
+
+ ggplot() +
+    geom_point(data = char_long,
+               aes(x = as.Date(year, format = "%Y"),
+                 y = values,
+                 color = characteristics,
+                 alpha = 0.5)) +
+   
+   geom_line(data = characteristics_mean,
+             aes(x = year, 
+                y = mean),
+             size = 0.8) +
+   geom_smooth(data = characteristics_mean,
+             aes(x = year, 
+                y = mean),
+                color = "red") +
+  facet_wrap(~characteristics, scales = "free") +
+   theme(legend.position = "none",
+         axis.title.x = element_text("Year"),
+         axis.title.y = element_text("Values"),
+         plot.title = element_text("Trend of Music Components Overtime"))
+```
+
+```{r}
+lm_year <- lm(year ~ acousticness, data = spotify_songs)
+
+lm_dance <- lm(year ~ danceability, data = spotify_songs)
+
+result <- as.data.frame(broom::tidy(lm_year)) %>% 
+  filter(p.value < 0.05)
+
+kable(result, digits = 2, caption = "lm(year~features)", booktabs = T, align = "c", escape = F) %>% 
+  kable_styling(latex_options = c("striped", "hold_position"), full_width = F, position = "center") 
+
+lm_year
+lm_dance
+```
+
+
 # Conclusion
 
 After Exploratory Data Analysis, our group got the answers to those questions. 
@@ -504,30 +741,4 @@ The R packages we used in this report:
 _@ggplot2, @skimr, @corrplot2017, @ggthemes, @DT, @devtools, @readr, @tidyverse, @dplyr, @lubridate, @knitr, @kableExtra, @broom, @gridExtra, @genius, @tidytext, @textdata, @spotifyr,  @ggridges ._
 
 # Reference
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
