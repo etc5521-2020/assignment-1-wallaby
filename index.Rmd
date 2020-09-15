@@ -270,7 +270,7 @@ rush_bing %>%
   kable_styling(latex_options = c("striped", "hold_position"), full_width = F)
 ```
 
-* Lastly, we analyzed the sentiment of this album to see whether the valence of an album is associated with the lyrics. The average sentiment value of this album is -0.47 by the "afinn" lexicon. And we also analysed the sentiment of lyrics using the "bing" lexicon. The above table shows the most frequent words and their sentiment in this album. In addition, the figure below shows more intuitively the frequency of words which appears more than once. We can easily find that the negative words appear more than the positive ones.
+* Lastly, we analyzed the sentiment of this album to see whether the valence of an album is associated with the lyrics. The average sentiment value of this album is -0.47 by the "afinn" lexicon. And we also analyzed the sentiment of lyrics using the "bing" lexicon. The above table shows the most frequent words and their sentiment in this album. In addition, the figure below shows more intuitively the frequency of words which appears more than once. We can easily find that the negative words appear more than the positive ones.
 
 ```{r sentiment-plot, fig.height=3.5}
 rush_bing %>% 
@@ -295,33 +295,34 @@ rush_afinn <- rush %>%
 rush_sentiment_value <- round(mean(rush_afinn$value), digits = 2)
 ```
 
-## Analyse the Audio Features
+## Analyzing the Audio Features
 
-In this part, we analysed the audio features of all the songs in our dataset. The figure below shows how these features like in different genres. Here's a simple explanation of these features:
-
-- acousticness: A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 
-
-- danceablity: Danceability describes how suitable a track is for dancing. A value of 0.0 is least danceable and 1.0 is most danceable.
-
-- duration_ms: The duration of the track in milliseconds. (And duration_s in seconds, rounded.)
-
-- energy: Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy.
-
-- instrumentalness: Predicts whether a track contains no vocals. 
-
-- key: The key the track is in. 
-
-- liveness: Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live.
-
-- loudness: The overall loudness of a track in decibels (dB).
-
-- mode: Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.
-
-- speechness: Speechiness detects the presence of spoken words in a track. 
-
-- tempo: The overall estimated tempo of a track in beats per minute (BPM). 
-
-- valence: A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
+* In this part, we analyzed the audio features of all the songs in our dataset. Here's a simple explanation of these features:
+  + **acousticness:** A confidence measure from 0.0 to 1.0 of whether the track is acoustic.
+  
+  + **danceablity:** Danceability describes how suitable a track is for dancing. A value of 0.0 is least danceable and 1.0 is most danceable.
+  
+  + **duration_ms:** The duration of the track in milliseconds. (And duration_s in seconds, rounded.)
+  
+  + **energy:** Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy.
+  
+  + **instrumentalness:** Predicts whether a track contains no vocals.
+  
+  + **key:** The key the track is in.
+  
+  + **liveness:** Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live.
+  
+  + **loudness:** The overall loudness of a track in decibels (dB).
+  
+  + **mode:** Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.
+  
+  + **speechness:** Speechiness detects the presence of spoken words in a track.
+  
+  + **tempo:** The overall estimated tempo of a track in beats per minute (BPM). 
+  
+  + **valence:** A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
+  
+*  The figure below shows how these features are like in different genres.
 
 ```{r features-genre, fig.cap='Audio Feature Density Plot', fig.height=5}
 spotify_songs_features <- spotify_songs %>% 
@@ -343,11 +344,9 @@ spotify_songs_features %>%
   scale_color_brewer(palette = "Accent") + ylab("Density")
 ```
 
-The next three box plots are to find out the differences of music attributes between different Music Genres. Firstly, the relationship between color and Music Genre is established, and put into the same tibble, call "COLORS". This method allows different Music Genre can be clearly distinguished by different colors, and then the specific characteristic of each Music Genre can be judged from those box plots.
+* The next three box plots are to find out the differences of music attributes between different Music Genres.
 
-The first plot is the relationship between Music Genre and Valence. It can be clearly seen from the plot that Latin has the highest value of Valence and EDM has the lowest value of Valence. This shows that Latin's capacity of conveying the musical position is more powerful, while EDM sounds more negative. The other four Music Genre have no obvious trend in this respect, which are almost between 0.3 and 0.7.
-
- 
+* Firstly, the relationship between color and Music Genre is established, and put into the same tibble, call "COLORS". This method allows different Music Genre to be clearly distinguished by different colors, and then the specific characteristic of each Music Genre can be judged from those box plots.
 
 ```{r color}
 COLORS <- c("#FFF8A3", "#A9CC8F", 
@@ -370,10 +369,9 @@ ggplot(new_data1, aes(reorder(playlist_genre, valence), y = valence)) +
   ylab("Valence") +
   scale_fill_manual(values = COLORS)+ 
   theme(legend.position="none")
-
 ```
 
-The second plot describes the relationship between Music Genre and Energy. Energy is a measure from 0.0 to 1.0 and representatives a conceptual measure of intensity and activity. It can be clearly seen from the plot that EDM has the highest value of Energy, while R B's value of Energy is the lowest, which also shows the style of these two Music Genres. Mostly, EDM will make people feel fast, loud, and noisy when listening. However, R&B is mainly lyrical, slow and quiet, which bring less energy for the listeners. Similarly, Rock has always been famous for its flexible and bold expression and passionate music rhythm, and its ranking is only inferior to EDM.
+* The first plot above is the relationship between Music Genre and Valence. It can be clearly seen from the plot that Latin has the highest value of Valence and EDM has the lowest value of Valence. This shows that Latin's capacity of conveying the musical positiveness is more powerful, while EDM sounds more negative. The other four Music Genre have no obvious trend in this respect, which are almost between 0.3 and 0.7.
 
 ```{r energy, fig.cap="Average Energy by Music Genre", fig.height=3.5}
 ggplot(new_data1, aes(reorder(playlist_genre, energy), y = energy)) + 
@@ -386,9 +384,10 @@ ggplot(new_data1, aes(reorder(playlist_genre, energy), y = energy)) +
   theme(legend.position="none")
 ```
 
-Finally, this plot describes the relationship between Music Genres and Speechlesness. Speechlessness detects the presence of spoken words in a track. If more words or sentences are said in a song, the closer to 1.0 the attribute value. That attribute is very interesting, which indicates whether the artists tends to express ideas by describing the lyrics in music or writing the melody of music to express their feelings.
+* The second plot above describes the relationship between Music Genre and Energy. Energy is a measure from 0.0 to 1.0 and represents a conceptual measure of intensity and activity. It can be clearly seen from the plot that EDM has the highest value of Energy, while Rythm and Bass value of Energy is the lowest, which also shows the style of these two Music Genres. Mostly, EDM will make people feel energized, loud, and noisy when listening. However, R&B is mainly lyrical, slow and quiet, which bring less energy for the listeners. Similarly, Rock has always been famous for its flexible and bold expression and passionate music rhythm and its ranking is only inferior to EDM.
 
-Focus on the plot, it is no doubt that Rap is bound to occupy the first place, because the characteristic of Rap is to quickly tell a series of rhyming lyrics against the background of mechanical rhythmic sound. What is worth noting is that Rock and POP are the lowest, which shows that those two genres tend to use the melody or rhythm of music to affect the audience, rather than using the lyrics.
+
+* Finally, the above plot describes the relationship between Music Genres and Speechiness. Speechiness detects the presence of spoken words in a track. If more words or sentences are said in a song, the closer to 1.0 the attribute value. That attribute is very interesting, which indicates whether the artists tends to express ideas by describing the lyrics in music or writing the melody of music to express their feelings.
 
 ```{r speechiness, fig.cap="Average Speechiness by Music Genre", fig.height=3.5}
 ggplot(new_data1, aes(reorder(playlist_genre, speechiness), y = speechiness)) + 
@@ -401,7 +400,9 @@ ggplot(new_data1, aes(reorder(playlist_genre, speechiness), y = speechiness)) +
   theme(legend.position="none")
 ```
 
-After describing the contents and internal relations of the three plots in detail, there are still many related attributes that have not been explored. The purpose of our group is to put up the most interesting parts. If someone is interested, it is easy to continue to analyse.
+* From the plot, there is no doubt that Rap is bound to occupy the first place, because the characteristic of Rap is to quickly tell a series of rhyming lyrics against the background of mechanical rhythmic sound. What is worth noting is that Rock and POP are the lowest, which shows that those two genres tend to use the melody or rhythm of music to affect the audience, rather than using the lyrics.
+
+* After describing the contents and internal relations of the three plots in detail, there are still many related attributes that have not been explored. The purpose of our group is to put up the most interesting parts together. If someone is interested, it is easy to continue and build upon the existing analyses.
 
 ## Music Genre and their Popularity - by Decade of release date
 
