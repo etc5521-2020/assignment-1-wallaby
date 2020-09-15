@@ -33,6 +33,7 @@ library(corrplot)
 library(ggthemes)
 library(spotifyr)
 library(ggridges)
+library(visdat)
 ```
 
 [This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
@@ -43,21 +44,19 @@ library(ggridges)
 
 Music, in a broad sense, is any art composed of sound, but it can express people's thoughts and thoughts, which implies the author's life experience, thoughts and feelings, and can bring people the enjoyment of beauty and the expression of human feelings. At the same time, music is also a form of social behavior, through which people can exchange feelings and life experiences. 
 
-In ancient times, when the court held a banquet, or some talented people visited the landscape, they would play music to boost the fun. But in modern times, because the threshold of classical music is too high, and its development has gradually reached the extreme, it has become a very small group, while pop music (the general name of popular songs, including Rock, R&B, Latin, etc)  is gradually showing its own characteristics. Therefore, modern songs are quietly occupying the top position in people's hearts because of their outstanding performance in conveying emotion and life experience. Listening to pop music has also become the most common behavior in everyone's daily entertainment.
-
-Nowadays, music plays an important role in people's life. It plays an indispensable role in helping people manage and improve their quality of life. As fans of music, we not only enjoy music, but also wonder how music strikes people's hearts with simple tones, rhythms, timbres and words. How high is the position of genre in music performance? How much influence does the genre, or the various attributes of songs, have on music? Where do we like music? Whether it makes us dance or sing unconsciously, or does it convey our emotions and implicate our thoughts? All these are the motivations that we continue to study. But now listening software has sprung up like mushrooms. After careful consideration, our group decided to select Spotify as the research object. First of all, let me introduce Spotify.
+In ancient times, when the court held a banquet, or some talented people visited the landscape, they would play music to boost the fun. But in modern times, because the threshold of classical music is too high, and its development has gradually reached the extreme, it has become a very small group, while pop music (the general name of popular songs, including Rock, R&B, Latin, etc) is gradually showing its own characteristics. Therefore, modern songs are quietly occupying the top position in people's hearts because of their outstanding performance in conveying emotion and life experience. Listening to pop music has also become the most common behavior in everyone's daily entertainment.
 
 Spotify is a legitimate streaming music service platform, which has been supported by Warner Music, Sony, EMI and other major record companies around the world. Now it has more than 60 million users, and it is the world's leading large-scale online streaming music playing platform.
 
-Because Spotify contains a large number of users' data, four users who are very interested in it, Charlie Thompson, Josiah parry, Donal Phipps, and Tom Wolff decided to make it easier for everyone to know their own preferences or the mainstream of most people's listening to songs through spotify's API, thus creating Spotifyr package. Also, it is the source of our group assignment data.
+Because Spotify contains a large number of users' data, four users who are very interested in it, Charlie Thompson, Josiah parry, Donal Phipps, and Tom Wolff decided to make it easier for everyone to know their own preferences or the mainstream of most people's listening to songs through spotify's API, thus creating Spotifyr package. In addition to Spotify package, our data is also mixed with blog post data created by Kaylin Pavlik. Six main categories (EDM, Latin, pop, R&B, rap, rock) are used to classify 5000 songs. The combination of the two data has a great effect on the study of the popularity of pop music.
 
-In addition to Spotify package, our data is also mixed with blog post data created by Kaylin Pavlik. Six main categories (EDM, Latin, pop, R&B, rap, rock) are used to classify 5000 songs. The combination of the two data has a great effect on the study of the popularity of pop music. 
+Nowadays, music plays an important role in people's life. It plays an indispensable role in helping people manage and improve their quality of life. As fans of music, we not only enjoy music, but also wonder how music strikes people's hearts with simple tones, rhythms, timbres and words. How popular is each genre? How much influence does the genre, or the various attributes of songs, have on music popularity? Does it makes us dance or sing unconsciously, or does it convey our emotions and implicate our thoughts? The curiosity behind all these questions drives the purpose of this analysis.
 
 ## Analysis Questions
 
 By doing this exploratory data analysis, we want to know: 
 
-Main Question: What audio features are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
+Primary Question: What audio features are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
 
 Sub Questions: 
 
@@ -67,9 +66,13 @@ Sub Questions:
 
 3. There are plenty of modern music genres nowadays, What unique style or charm can stand out and become the first choice of people?
 
+Questions Added to enhance the scope of the analysis:
+
 4.
 
 5. What exactly makes artists stand out even when there are artists doing the same kind of music? What is the Unique Selling Point (USP) of a few particular selected artists?
+
+This helps us enhance the scope of the primary analysis and broadens our understanding of the relations between popularity and audio features.
 
 # Data Description
 
@@ -86,42 +89,66 @@ spotify_songs <- spotify_songs %>%
 
 ## Data Source
 
-The data of this report is part of the [tidytuesday chanllenge](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-21/readme.md), which comes from [Spotify](https://www.spotify.com/) via the  [spotifyr](https://www.rdocumentation.org/packages/spotifyr/versions/2.1.1) package.
+* The data of this report is part of the [tidytuesday chanllenge](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-01-21/readme.md), which comes from [Spotify](https://www.spotify.com/) via the  [spotifyr](https://www.rdocumentation.org/packages/spotifyr/versions/2.1.1) package.
 
-The **variables** in this dataset are `r names(spotify_songs)`.
+**Data Collection Methods:**
 
-**Data Collection Methods:** Spotifyr package can extract track audio characteristics or other related information from Spotify's Web API in batches. For example, if you want to search for an artist, just type in his name, and all his albums or songs will be listed in seconds. Meanwhile, Spotifyr package will record the popularity metrics of all tracks or albums, so it is easy to understand the correlation between music popularity and music characteristics. Then, Jon Harmon and Neal Grantham extracted the Spotifr package and added the content of Kaylin Pavlik's recent blogpost to divide the genre of nearly 5000 songs, thus generating the Tidytuesdayr package we need for this assignment.
+* Spotifyr package can extract track audio characteristics or other related information from Spotify's Web API in batches. For example, if you want to search for an artist, just type in his name, and all his albums or songs will be listed in seconds.
 
-We chose music works created by artists that can be found on Spotify from January 1, 1957 to January 29, 2020.
+* Meanwhile, Spotifyr package will record the popularity metrics of all tracks or albums, so it is easy to understand the correlation between music popularity and music characteristics. Then, Jon Harmon and Neal Grantham extracted the Spotifr package and added the content of Kaylin Pavlik's recent blogpost to divide the genre of nearly 5000 songs, thus generating the Tidytuesdayr package we need for this assignment.
+
+* We chose music works created by artists that can be found on Spotify from January 1, 1957 to January 29, 2020.
 
 ## Data Structure
 
-After reading the data on RStudio, our team used the glimpse() function to show the specific content and structure of the data. And here is a brief summary of the data structure:
+* After reading the data on RStudio, our team used the glimpse() function to show the specific content and structure of the data. And here is a brief summary of the data structure:
 
 ```{r data-structure}
 glimpse(spotify_songs)
 ```
 
+* The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables and their types are as mentioned above.
 
-The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables and their types are as mentioned above.  
+**A Visual Overview of the Data:**
 
-# Analysis and Findings
+```{r visdat, fig.cap='Visual Representation of the Dataset'}
+vis_dat(spotify_songs)
+```
 
-## Top Artists
+* A picture speaks a thousand words. Thus, we represent the data in a simple and elegant visualization that describes the same column names and types described previously through text.
 
-Now, we will clean the data, select the variables that are useful to our EDA, and retain six major music genres (the proportions of other genres are very low, which can be ignored). And then, we arrange the data from high to low according to track popularity. 
+* Since our analysis focuses on correlations between audio features, it is a good idea to have some overview as to how the numerical fields correlate.
 
-```{r cleandata}
+```{r viscor, fig.cap='A Visual Representation of the Correlation of numeric data'}
+spotify_songs %>%
+  select(track_popularity, danceability, energy, loudness, speechiness,
+         acousticness, instrumentalness, liveness, valence, tempo,) %>% vis_cor()
+```
+
+* The Visualization above shows how each numerical variable correlate among themselves. This gives us a basic understanding of how we can analyze for correlations.
+
+## Data Cleaning:
+
+* Now, we will clean the data, select the variables that are useful to our EDA, and retain six major music genres (the proportions of other genres are very low, which can be ignored). And then, we arrange the data from high to low according to track popularity. 
+
+```{r cleandata, fig.cap='Clean Data with necessary columns', fig.height=6}
 newdata <- spotify_songs %>% 
   select(track_name, track_artist, track_popularity, playlist_genre, danceability, energy, key,
          loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo,
          duration_ms) %>% arrange(desc(track_popularity))
 
 new_data1 <- newdata %>%
-  filter(playlist_genre == "latin" | playlist_genre == "r&b" | playlist_genre == "pop" | playlist_genre == "rap" | playlist_genre == "rock" | playlist_genre == "edm")
+  filter(playlist_genre == "latin" | playlist_genre == "r&b" | playlist_genre == "pop" |
+           playlist_genre == "rap" | playlist_genre == "rock" | playlist_genre == "edm")
+
+ggpubr::ggarrange(vis_dat(new_data1), vis_miss(new_data1), ncol = 1)
 ```
 
-From the following table and figure, we can see that Queen, Martin Garrix and the Chainmakers occupy one, two and three places respectively. Also, we can see that there are many famous artists on the list, such as Drake, Maroon 5 or Ed Sheeran, etc.
+* The above figure gives an overview of the columns necessary for our analysis. This data is clean with less than 0.1% missing data and is ready for analysis.
+
+# Analysis and Findings
+
+## Top Artists
 
 ```{r artistworks, tab.cap="Top Artists with most songs"}
 datatable <- new_data1 %>% 
@@ -132,7 +159,7 @@ datatable <- new_data1 %>%
 datatable(datatable)
 ```
 
-Similarly, this is a plot of artists with most songs showed in the bar plot. Our group decided to use two different forms to express, one is through the comparison of words(using datatable), the other is through the observation of intuitive figure. This will help to deepen our impression of the top 20 singers and have an intuitive understanding of the gap between them.
+* From the above table, we can see that Queen, Martin Garrix and The Chainsmokers occupy one, two and three places respectively. Also, we can see that there are many famous artists on the list, such as Drake, Maroon 5 or Ed Sheeran, etc.
 
 ```{r artists, fig.cap="Top 20 Artists who wrote the most songs from 1941 to 2020", fig.height=4}
 new_data1 %>% 
@@ -148,12 +175,9 @@ new_data1 %>%
   theme_bw()
 ```
 
-Next is a radar plot. Our group filters artists whose popularity is greater than 95, and then load the data into this type of plot. In this way, the singers who are at the top or most people like can be clear at a glance, and at the same time, music lovers can know the characteristics of these top singers' music artworks.
+* Similarly the figure above shows the same in a bar plot. This will help to deepen our impression of the top 20 singers and have an intuitive understanding of the gap between them. Like mentioned previously, pictures speak a lot more than tables and information in text format.
 
-First, we can see that Maroon 5, the Weekend, Roddy Rich and KAROL G are overwhelming in popularity. Because the size of each pie chart means the level of popularity. Also, it is clear that popular singers usually create many genres of songs, which are not limited to a single genre. Next, from the perspective of different artists' music artworks style, there are filled with the great differences. 
-
-For example, from the brightness of colors, we can see that the Energy brought by Maroon 5 and Billie Eilish's music artworks is not too high. This is not to elaborate their shortcomings, but to elaborate their style, which is lyrical and soft. If judging from the color of each fan-shaped boundary line, it can be concluded that Roddy Rich and Trevor Daniel's works have the highest value of danceability, after the comparison of each artworks' average tempo, rhythm stability, beat strength, and overall regularity.
-
+* We filter artists whose popularity is greater than 95, and then visualize it in the form of a radar plot. This way, the singers who are at the top can be clearly identified at a glance. At the same time, music lovers can know the characteristics of these top singers' music artworks.
 
 ```{r radarplot, fig.cap="Characteristics of Top Singers", fig.height=5, fig.width=7}
 Artist_attributes <- new_data1 %>%
@@ -174,6 +198,12 @@ Artist_attributes <- new_data1 %>%
 
 Artist_attributes 
 ```
+
+* The height of each pie segment shows the level of popularity. The color intensity shows the energy levels of the songs by that artist and different colors represent genre. The blue outline describes the danceability of the songs. This way, we can perceive three audio features at the same time along with Track Popularity.
+
+* From the figure above, we can see that Maroon 5, the Weekend, Roddy Rich and KAROL G are overwhelming in popularity. Also, it is clear that popular singers usually create many genres of songs, which are not limited to a single genre.
+
+* Next, from the perspective of different artists' music artworks style, they are filled with the great differences. For example, from the brightness of colors, we can see that the Energy brought by Maroon 5 and Billie Eilish's music artworks is not too high. This is not to elaborate their shortcomings, but to elaborate their style, which is lyrical and soft. If judging from the color of each fan-shaped boundary line, it can be concluded that Roddy Rich and Trevor Daniel's works have the highest value of danceability, after the comparison of each artworks' average tempo, rhythm stability, beat strength, and overall regularity.
 
 ## Analyzing our Favorite Artist - Coldplay
 
@@ -241,16 +271,16 @@ rush_bing %>%
   kable_styling(latex_options = c("striped", "hold_position"), full_width = F)
 ```
 
-```{r sentiment-plot}
+```{r sentiment-plot, fig.height=3.5}
 rush_bing %>% 
   count(word, sentiment, sort = TRUE) %>% 
   filter(n >= 2) %>% 
   ggplot(aes(reorder(word, n), n, fill = sentiment)) + 
-  geom_col() + 
+  geom_bar(stat = "identity") + 
   coord_flip() + 
-  theme(axis.title.y=element_blank()) +
+  theme(axis.title.y=element_blank()) + 
   facet_wrap(~sentiment, scales = "free_y") + 
-  ggtitle("Sentiment of the Album 'A Rush of Blood to the Head'")
+  ggtitle("sentiment of the album 'A rush of blood to the head'")
 ```
 
 ```{r sentiment-value}
