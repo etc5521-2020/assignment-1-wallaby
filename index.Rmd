@@ -108,6 +108,13 @@ glimpse(spotify_songs)
 
 * The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables and their types are as mentioned above.
 
+**Data Table -**
+
+```{r datatable}
+spotify_songs %>% group_by(playlist_genre) %>% arrange(desc(track_popularity)) %>%
+  select(track_artist, track_popularity, track_name, playlist_genre) %>% datatable()
+```
+
 **A Visual Overview of the Data:**
 
 ```{r visdat, fig.cap='Visual Representation of the Dataset'}
@@ -315,7 +322,7 @@ rush_sentiment_value <- round(mean(rush_afinn$value), digits = 2)
   
   + **mode:** Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.
   
-  + **speechness:** Speechiness detects the presence of spoken words in a track.
+  + **speechiness:** Speechiness detects the presence of spoken words in a track.
   
   + **tempo:** The overall estimated tempo of a track in beats per minute (BPM). 
   
@@ -606,6 +613,220 @@ grid.arrange(dance_smooth, loudness_smooth, valence_smooth,
 * We can observe that most of the audio features have almost no relation with popularity except for Energy and Instrumentalness which negatively affect popularity while Danceability positively affect popularity. This trend is observed for tracks that have a popularity greater than 50.
 
 * This leads us to extend the analysis to pursue danceabilty and check which music genre, and artists are in line with this trend. The next analysis pursues our questiton as to what the unique selling point for each selected artist is.
+
+## Unique Features of Artists
+
+* Now that we have analyzed about the correlation of different audio features, let's explore how the artists are popular and exactly why they are popular. This involves analyzing common audio features in the songs of the top artists.
+
+* We choose the following artists who are regarded as one of the best in their genre:
+  
+  + Taylor Swift - Pop
+  + Eminem - Rap
+  + AC/DC - Rock
+  + Shakira - Latin
+  + Usher - R & B
+  + David Guetta - EDM
+  
+* We select Danceability, Speechiness , Energy and Valence as our audio features since these best describe the genres we have selected.
+
+```{r tables}
+Table <- spotify_songs %>% select(track_artist, track_popularity, track_name, playlist_genre, danceability, energy, speechiness, valence)
+
+SwiftPop <- Table %>% filter(track_artist == "Taylor Swift", playlist_genre == "pop")
+
+EmiRap <- Table %>% filter(track_artist == "Eminem", playlist_genre == "rap")
+
+ACDCRock <- Table %>% filter(track_artist == "AC/DC", playlist_genre == "rock")
+
+ShakLatin <- Table %>% filter(track_artist == "Shakira", playlist_genre == "latin")
+
+UshRB <- Table %>% filter(track_artist == "Usher", playlist_genre == "r&b")
+
+DavEDM <- Table %>% filter(track_artist == "David Guetta", playlist_genre == "edm")
+```
+
+
+#### Taylor Swift (Pop Artist) Audio Features
+
+* First up, let's see what Taylor's pop songs are like.
+
+```{r TayPop, fig.cap="Taylor Swift Audio Features"}
+TSD <- SwiftPop %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
+  geom_vline(xintercept = mean(SwiftPop$danceability)) +
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+
+TSS <- SwiftPop %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
+  geom_vline(xintercept = mean(SwiftPop$speechiness)) +
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+
+TSE <- SwiftPop %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
+  geom_vline(xintercept = mean(SwiftPop$energy)) +
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+
+TSI <- SwiftPop %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
+  geom_vline(xintercept = mean(SwiftPop$valence)) +
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+
+grid.arrange(TSD, TSS, TSE, TSI)
+```
+
+#### Eminem (Rap Artist) Audio Features
+
+* Next up, it's Eminem's rap prowess!
+
+```{r EmiRap, fig.cap="Eminem Audio Features"}
+ED <- EmiRap %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
+  geom_vline(xintercept = mean(EmiRap$danceability)) +
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+
+ES <- EmiRap %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
+  geom_vline(xintercept = mean(EmiRap$speechiness)) +
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+
+EE <- EmiRap %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
+  geom_vline(xintercept = mean(EmiRap$energy)) +
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+
+EI <- EmiRap %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
+  geom_vline(xintercept = mean(EmiRap$valence)) +
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+
+grid.arrange(ED, ES, EE, EI)
+```
+
+#### AC/DC (Rock Artist) Audio Features
+
+* Next, it's AC/DC's rocking songs!
+
+```{r ADRock, fig.cap="AC/DC Audio Features"}
+ADD <- ACDCRock %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
+  geom_vline(xintercept = mean(ACDCRock$danceability)) +
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+
+ADS <- ACDCRock %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
+  geom_vline(xintercept = mean(ACDCRock$speechiness)) +
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+
+ADE <- ACDCRock %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
+  geom_vline(xintercept = mean(ACDCRock$energy)) +
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+
+ADI <- ACDCRock %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
+  geom_vline(xintercept = mean(ACDCRock$valence)) +
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+
+grid.arrange(ADD, ADS, ADE, ADI)
+```
+
+#### Shakira (Latin Artist) Audio Features
+
+* Let's look at Shakira's Latin songs!
+
+```{r ShaLat, fig.cap="Shakira Audio Features"}
+SD <- ShakLatin %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
+  geom_vline(xintercept = mean(ShakLatin$danceability)) +
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+
+SS <- ShakLatin %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
+  geom_vline(xintercept = mean(ShakLatin$speechiness)) +
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+
+SE <- ShakLatin %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
+  geom_vline(xintercept = mean(ShakLatin$energy)) +
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+
+SI <- ShakLatin %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
+  geom_vline(xintercept = mean(ShakLatin$valence)) +
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+
+grid.arrange(SD, SS, SE, SI)
+```
+
+#### Usher (Rock Artist) Audio Features
+
+* Let's look at Usher's Rythm and Bass!
+
+```{r UshRB, fig.cap="Usher Audio Features"}
+UD <- UshRB %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
+  geom_vline(xintercept = mean(UshRB$danceability)) +
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+
+US <- UshRB %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
+  geom_vline(xintercept = mean(UshRB$speechiness)) +
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+
+UE <- UshRB %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
+  geom_vline(xintercept = mean(UshRB$energy)) +
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+
+UI <- UshRB %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
+  geom_vline(xintercept = mean(UshRB$valence)) +
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+
+grid.arrange(UD, US, UE, UI)
+```
+
+#### David Guetta (EDM Artist) Audio Features
+
+* Finally, David's Electronic Dance Music!
+
+```{r DGEDM, fig.cap="David Guetta Audio Features"}
+DGD <- DavEDM %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
+  geom_vline(xintercept = mean(DavEDM$danceability)) +
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+
+DGS <- DavEDM %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
+  geom_vline(xintercept = mean(DavEDM$speechiness)) +
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+
+DGE <- DavEDM %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
+  geom_vline(xintercept = mean(DavEDM$energy)) +
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+
+DGI <- DavEDM %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
+  geom_vline(xintercept = mean(DavEDM$valence)) +
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+
+grid.arrange(DGD, DGS, DGE, DGI)
+```
+
+### Mean Values for the Audio Features are as follows -
+
+**Danceabilty -**
+
+* Taylor Swift - `r mean(SwiftPop$danceability)`
+* Eminem - `r mean(EmiRap$danceability)`
+* AC/DC - `r mean(ACDCRock$danceability)`
+* Shakira - `r mean(ShakLatin$danceability)`
+* Usher - `r mean(UshRB$danceability)`
+* David Guetta - `r mean(DavEDM$danceability)`
+
+**Speechiness -**
+
+* Taylor Swift - `r mean(SwiftPop$speechiness)`
+* Eminem - `r mean(EmiRap$speechiness)`
+* AC/DC - `r mean(ACDCRock$speechiness)`
+* Shakira - `r mean(ShakLatin$speechiness)`
+* Usher - `r mean(UshRB$speechiness)`
+* David Guetta - `r mean(DavEDM$speechiness)`
+
+**Energy -**
+
+* Taylor Swift - `r mean(SwiftPop$energy)`
+* Eminem - `r mean(EmiRap$energy)`
+* AC/DC - `r mean(ACDCRock$energy)`
+* Shakira - `r mean(ShakLatin$energy)`
+* Usher - `r mean(UshRB$energy)`
+* David Guetta - `r mean(DavEDM$energy)`
+
+**Valence -**
+
+* Taylor Swift - `r mean(SwiftPop$valence)`
+* Eminem - `r mean(EmiRap$valence)`
+* AC/DC - `r mean(ACDCRock$valence)`
+* Shakira - `r mean(ShakLatin$valence)`
+* Usher - `r mean(UshRB$valence)`
+* David Guetta - `r mean(DavEDM$valence)`
 
 # Conclusion
 
