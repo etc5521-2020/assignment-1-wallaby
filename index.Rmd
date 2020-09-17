@@ -79,6 +79,10 @@ Questions Added to enhance the scope of the analysis:
 
 This helps us enhance the scope of the primary analysis and broadens our understanding of the relations between popularity and audio features.
 
+What audio features are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
+
+Exploring how the music characteristics change over time could enhance the primary analysis of audio features. This question is a good addition to the scope of the analysis as rather than just looking at the different audio features, we are also looking at how those audio features are changing over time, therefore broadening the analysis. Across the years, music trend and taste have evolved, thus it would be beneficial to look at whether the music components are shifting.
+
 # Data Description
 
 ```{r read-data, eval=FALSE}
