@@ -772,7 +772,6 @@ top4_components %>%
   ggtitle("Trend of music components of the top artists") +
   ylab("Values") +
   xlab("Year")
-ggplotly()
 ```
 
 It can be seen from Figure \@ref(fig:top4-components) that music components of the individual artist shift over time. Some components are pretty volatile. David Guetta, who is in both pop and edm genres, has a huge change in his danceability and energy. He tends to produce more music with lower danceability but higher energy these days. His songs also have lower duration compared to those in the past. The valence of his songs change overtime too - with 2010 and 2011 being the years when he produced more positive songs, and his songs tend to get less positive over the years. Hardwell focuses on edm, which explains the low speechiness. His instrumentalness used to be pretty high in 2013, however it is shifting towards zero over time. Unlike David Guetta, Hardwell tends to produce more positive songs these days.
