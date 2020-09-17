@@ -4,6 +4,8 @@ Team name: wallaby
 
 Team members:
 
+* (Chengzhi Ye)
+* (Yan Ma)
 * Helen Evangelina
 * Rahul Bharadwaj
 
