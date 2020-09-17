@@ -172,7 +172,7 @@ grid.arrange(vis_dat(new_data1), vis_miss(new_data1), ncol = 1)
 
 * Now, we will clean the data, select the variables that are useful to our EDA, and retain six major music genres (the proportions of other genres are very low, which can be ignored). And then, we arrange the data from high to low according to track popularity. 
 
-```{r cleandata}
+```{r cleaningdata}
 newdata <- spotify_songs %>% 
   select(track_name, track_artist, track_popularity, playlist_genre, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration_ms) %>% 
   arrange(desc(track_popularity))
