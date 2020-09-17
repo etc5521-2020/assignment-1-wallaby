@@ -680,22 +680,24 @@ DavEDM <- Table %>% filter(track_artist == "David Guetta", playlist_genre == "ed
 ```{r TayPop, fig.cap="Taylor Swift Audio Features"}
 TSD <- SwiftPop %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
   geom_vline(xintercept = mean(SwiftPop$danceability)) +
-  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Tracks")
 
 TSS <- SwiftPop %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
   geom_vline(xintercept = mean(SwiftPop$speechiness)) +
-  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Tracks")
 
 TSE <- SwiftPop %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
   geom_vline(xintercept = mean(SwiftPop$energy)) +
-  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Tracks")
 
 TSI <- SwiftPop %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
   geom_vline(xintercept = mean(SwiftPop$valence)) +
-  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Tracks")
 
 grid.arrange(TSD, TSS, TSE, TSI)
 ```
+
+* Danceability and valence are the strongest suits for Taylor Swift. Her songs are easy to dance to and are mostly positive. Keeping in mind that most of her songs are about her ex-lovers, it is surprising to see that the valence is positive. The choice of words used by Swift is mostly positive even if the song is about a topic that is generally negative. Thus, we can say Taylor Swift's songs are danceable and she resonates most with an audience that love pop songs.
 
 #### Eminem (Rap Artist) Audio Features
 
@@ -704,22 +706,24 @@ grid.arrange(TSD, TSS, TSE, TSI)
 ```{r EmiRap, fig.cap="Eminem Audio Features"}
 ED <- EmiRap %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
   geom_vline(xintercept = mean(EmiRap$danceability)) +
-  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Tracks")
 
 ES <- EmiRap %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
   geom_vline(xintercept = mean(EmiRap$speechiness)) +
-  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Tracks")
 
 EE <- EmiRap %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
   geom_vline(xintercept = mean(EmiRap$energy)) +
-  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Tracks")
 
 EI <- EmiRap %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
   geom_vline(xintercept = mean(EmiRap$valence)) +
-  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Tracks")
 
 grid.arrange(ED, ES, EE, EI)
 ```
+
+* Eminem's songs have a high value in general for danceabilty, energy, and also speechiness which as obvious characteristic for a rapper. The valence for Eminem's songs are negative and thus goes out to show that Eminem usually has negative words in his songs. This doesn't affect the popularity of his songs, at this is his strongest suit. His audeince love the content of his lyrics even though they are negative. Maybe this is because he is honest about his life and that resonates among his audience. 
 
 #### AC/DC (Rock Artist) Audio Features
 
@@ -728,22 +732,24 @@ grid.arrange(ED, ES, EE, EI)
 ```{r ADRock, fig.cap="AC/DC Audio Features"}
 ADD <- ACDCRock %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
   geom_vline(xintercept = mean(ACDCRock$danceability)) +
-  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Tracks")
 
 ADS <- ACDCRock %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
   geom_vline(xintercept = mean(ACDCRock$speechiness)) +
-  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Tracks")
 
 ADE <- ACDCRock %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
   geom_vline(xintercept = mean(ACDCRock$energy)) +
-  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Tracks")
 
 ADI <- ACDCRock %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
   geom_vline(xintercept = mean(ACDCRock$valence)) +
-  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Tracks")
 
 grid.arrange(ADD, ADS, ADE, ADI)
 ```
+
+* We can evidently observe that AC/DC is best known for the energy they bring in with their songs. Rock songs are usually more energetic and this observation is a proof of it. Even though they lack valence and danceability, they're a popular artist known for the energy they bring in!
 
 #### Shakira (Latin Artist) Audio Features
 
@@ -752,22 +758,24 @@ grid.arrange(ADD, ADS, ADE, ADI)
 ```{r ShaLat, fig.cap="Shakira Audio Features"}
 SD <- ShakLatin %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
   geom_vline(xintercept = mean(ShakLatin$danceability)) +
-  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Tracks")
 
 SS <- ShakLatin %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
   geom_vline(xintercept = mean(ShakLatin$speechiness)) +
-  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Tracks")
 
 SE <- ShakLatin %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
   geom_vline(xintercept = mean(ShakLatin$energy)) +
-  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Tracks")
 
 SI <- ShakLatin %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
   geom_vline(xintercept = mean(ShakLatin$valence)) +
-  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Tracks")
 
 grid.arrange(SD, SS, SE, SI)
 ```
+
+* Shakira's songs have good mix of danceabilty, energy, and also mostly composed of positive valence value. This is a sweet spot in terms of audio features and there are no surprises that it makes people dance to the tunes without their knowledge! She is one of the most loved Latin and Pop singers of the modern era.
 
 #### Usher (Rock Artist) Audio Features
 
@@ -776,22 +784,24 @@ grid.arrange(SD, SS, SE, SI)
 ```{r UshRB, fig.cap="Usher Audio Features"}
 UD <- UshRB %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
   geom_vline(xintercept = mean(UshRB$danceability)) +
-  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Tracks")
 
 US <- UshRB %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
   geom_vline(xintercept = mean(UshRB$speechiness)) +
-  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Tracks")
 
 UE <- UshRB %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
   geom_vline(xintercept = mean(UshRB$energy)) +
-  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Tracks")
 
 UI <- UshRB %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
   geom_vline(xintercept = mean(UshRB$valence)) +
-  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Tracks")
 
 grid.arrange(UD, US, UE, UI)
 ```
+
+* Usher's songs are generally slow and melodious and this is justified from the low energy observed in the plot. Danceabilty is his strongest feature and his songs tend to be more positive as well. This is the kind of music that's enjoyed by people who love melody and rhythmic music. 
 
 #### David Guetta (EDM Artist) Audio Features
 
@@ -800,22 +810,24 @@ grid.arrange(UD, US, UE, UI)
 ```{r DGEDM, fig.cap="David Guetta Audio Features"}
 DGD <- DavEDM %>% ggplot() + geom_point(aes(x = danceability, y = track_name), color = "blue") +
   geom_vline(xintercept = mean(DavEDM$danceability)) +
-  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Danceability") + ylab("Tracks")
 
 DGS <- DavEDM %>% ggplot() + geom_point(aes(x = speechiness, y = track_name), color = "indianred") +
   geom_vline(xintercept = mean(DavEDM$speechiness)) +
-  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Speechiness") + ylab("Tracks")
 
 DGE <- DavEDM %>% ggplot() + geom_point(aes(x = energy, y = track_name), color = "limegreen") +
   geom_vline(xintercept = mean(DavEDM$energy)) +
-  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Energy") + ylab("Tracks")
 
 DGI <- DavEDM %>%  ggplot() + geom_point(aes(x = valence, y = track_name), color = "orange") +
   geom_vline(xintercept = mean(DavEDM$valence)) +
-  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Track Name")
+  theme(axis.text.y = element_blank()) + xlab("Valence") + ylab("Tracks")
 
 grid.arrange(DGD, DGS, DGE, DGI)
 ```
+
+* David Gueatta, a DJ is best known for the kind of energy he brings in with his songs. His sings are failry danceable as well as energetic. This makes David's songs popular even though his valence is poor with mostly negative lyrical words.
 
 ### Mean Values for the Audio Features are as follows -
 
@@ -859,11 +871,11 @@ grid.arrange(DGD, DGS, DGE, DGI)
 
 * Firstly, there is a positive or negative correlation between audio features and track popularity. However, as we all know, the value of a art work can't be measured only by numbers. The popularity of music artworks depends more on the artist's own popularity, creative talent or singing ability, or external factors such as world trends. The probability of success by deliberately catering to audio features and creating specific songs is not sufficient. 
 
-* Secondly, each top artist has its own artistic characteristics, and will be loved by specific groups of people. Top artists do not create music artworks according to the trend, instead, they will create their own trend for the world. 
+* Secondly, each top artist has its own artistic characteristics, and will be loved by specific groups of people. Top artists do not create music artworks according to the trend, instead, they will create their own trend for the world. We can observe that each popular artist has their own strong audio features and are loved even if their valence values are low. This can be evidenlty observed from the section 'Unique Features of Artists'. Each of the selected artists for one of the six genres are popular for their own style and features of music.
 
-* As for the six kinds of music genres that can stand out from the modern music, there are also their own characteristics inside. It's hard to understand the reasons for their success because of their unique styles. What we can do is to determine the genre of each song according to its style. 
+* As for the six kinds of music genres that can stand out from the modern music, there are also their own characteristics inside. It's hard to understand the reasons for their success because of their unique styles. What we can do is to determine the genre of each song according to its style. We can extend the Unique Feature analysis to any artist any know why exactly they are popular. 
 
-* Although Coldplay is one of the representative rock artist, their works contain more negative emotions. This is also in line with the rebellious and critical spirit of rock music, and this spirit has been respected by young people of different races all the time. They stick to their own style, try unconventional music routines as far as possible, and point to people's hearts with straightforward, profound and moving melody. This also confirms our analysis that Coldplay songs' lyrics convey negative emotions, which does not affect their popularity, but makes them top artists.
+* Although Coldplay is one of the representative rock artist, their works contain more negative emotions. This is also in line with the rebellious and critical spirit of rock music, and this spirit has been respected by young people of different races all the time. They stick to their own style, try unconventional music routines as far as possible, and point to people's hearts with straightforward, profound and moving melody. This also confirms our analysis that Coldplay songs' lyrics convey negative emotions, which does not affect their popularity, but makes them top artists. This is also in line with the other artists such as Eminem and AC/DC whose valence are low.
 
 * In conclusion, track popularity will pay more attention to the singer's own ability and attitude, rather than audio features. The biggest role of audio features is to reflect the singer's music style, rather than increase popularity.
 
