@@ -30,6 +30,9 @@ library(textdata)
 library(DT)
 library(corrplot)
 library(ggthemes)
+#to install the spotifyr package
+#install.packages("devtools")
+#devtools::install_github('charlie86/spotifyr')
 library(spotifyr)
 library(ggridges)
 library(visdat)
@@ -67,7 +70,7 @@ Sub Questions:
 
 Questions Added to enhance the scope of the analysis:
 
-4.
+4. Explore the music characteristics over time, is the music characteristic changing?
 
 5. What exactly makes artists stand out even when there are artists doing the same kind of music? What is the Unique Selling Point (USP) of a few particular selected artists?
 
@@ -106,7 +109,18 @@ spotify_songs <- spotify_songs %>%
 glimpse(spotify_songs)
 ```
 
-* The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables and their types are as mentioned above.
+* The spotify_song is tabular data, which contains 24 columns and 32,833 rows. The variables, their types and the description of each variable are presented in the table below.
+
+```{r variables-desc}
+library(DT)
+variables <- tibble("Variable" = c("track_id", "track_name", "track_artist", "track_popularity", "track_album_id", "track_album_name", "track_album_release_date", "playlist_name", "playlist_id", "playlist_genre", "playlist_subgenre", "danceability", "energy", "key", "loudness", "mode", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "duration_ms"),
+              "Class" = c("character", "character", "character", "double", "character", "character", "character", "character", "character", "character", "character", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double", "double"),      
+                    "Description" = c("Song unique ID", "Song Name", "Song Artist", "Song Popularity (0-100) where higher is better", "Album unique ID", "Song album name", "Date when album released", "Name of playlist", "Playlist ID", "Playlist genre", "Playlist subgenre", "Danceability describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable.", "Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.", "The estimated overall key of the track. Integers map to pitches using standard Pitch Class notation . E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on. If no key was detected, the value is -1.", "The overall loudness of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typical range between -60 and 0 db.", "Mode indicates the modality (major or minor) of a track, the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.", "Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks.", "A confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic.", "Predicts whether a track contains no vocals. “Ooh” and “aah” sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly “vocal”. The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0.", "Detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live.", "A measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).", "	The overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.", "Duration of song in milliseconds"))
+```
+
+```{r variable-datatable, eval=TRUE}
+DT::datatable(variables, options = list(pageLength = 10))
+```
 
 **Data Table -**
 
@@ -156,32 +170,45 @@ grid.arrange(vis_dat(new_data1), vis_miss(new_data1), ncol = 1)
 
 ## Top Artists
 
+* Now, we will clean the data, select the variables that are useful to our EDA, and retain six major music genres (the proportions of other genres are very low, which can be ignored). And then, we arrange the data from high to low according to track popularity. 
+
+```{r cleandata}
+newdata <- spotify_songs %>% 
+  select(track_name, track_artist, track_popularity, playlist_genre, danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, duration_ms) %>% 
+  arrange(desc(track_popularity))
+
+new_data1 <- newdata %>% 
+  filter(playlist_genre == "latin" | playlist_genre == "r&b" | playlist_genre == "pop" | playlist_genre == "rap" | playlist_genre == "rock" | playlist_genre == "edm")
+
+```
+
 ```{r artistworks, tab.cap="Top Artists with most songs"}
 datatable <- new_data1 %>% 
   group_by(track_artist) %>%
-  summarize(TotalSongs = n()) %>% 
-  arrange(desc(TotalSongs))  
+  summarize(Total = sum(track_popularity)/n()) %>% 
+  arrange(desc(Total)) 
   
 datatable(datatable)
 ```
 
-* From the above table, we can see that Queen, Martin Garrix and The Chainsmokers occupy one, two and three places respectively. Also, we can see that there are many famous artists on the list, such as Drake, Maroon 5 or Ed Sheeran, etc.
+* From the above table, we can see that Trevor Daniel, Y2K and Don Toliver occupy the first, second and third places respectively. Also, we can see that there are many famous artists on the list, such as Drake, Maroon 5 or Ed Sheeran, etc.
 
 ```{r artists, fig.cap="Top 20 Artists who wrote the most songs from 1941 to 2020", fig.height=4}
 new_data1 %>% 
-  count(track_artist) %>% 
+  group_by(track_artist) %>%
+  summarise(n = n_distinct(track_name)) %>% 
   arrange(-n) %>% 
-  head(20) %>%
+  head(10) %>%
   ggplot(aes(reorder(track_artist, n), n)) + 
   geom_col(fill="cyan3") + 
   coord_flip() +
-  ggtitle("Top 20 Artists who wrote the most songs from 1941 to 2020") + 
+  ggtitle("Top 10 Artists who wrote the most songs from 1941 to 2020") + 
   xlab("Artist") + 
   ylab("Count") +
   theme_bw()
 ```
 
-* Similarly the figure above shows the same in a bar plot. This will help to deepen our impression of the top 20 singers and have an intuitive understanding of the gap between them. Like mentioned previously, pictures speak a lot more than tables and information in text format.
+* The figure above shows the top 10 artists with the most songs. Having a bar plot instead of table will help to deepen our impression of the top 10 singers with most songs and have an intuitive understanding of the gap between them. Like mentioned previously, pictures speak a lot more than tables and information in text format.
 
 * We filter artists whose popularity is greater than 95, and then visualize it in the form of a radar plot. This way, the singers who are at the top can be clearly identified at a glance. At the same time, music lovers can know the characteristics of these top singers' music artworks.
 
