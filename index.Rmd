@@ -78,8 +78,13 @@ This helps us enhance the scope of the primary analysis and broadens our underst
 
 # Data Description
 
+```{r read-data, eval=FALSE}
+readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv') %>% 
+  write.csv("spotify_songs.csv")
+```
+
 ```{r read-csv}
-spotify_songs <- read.csv(here::here("spotify_songs.csv"))
+spotify_songs <- read.csv("spotify_songs.csv")
 spotify_songs <- spotify_songs %>% 
   mutate(track_artist = replace(track_artist, track_artist == "Ti<U+00EB>sto", "Tijs Michiel Verwest OON"))
 ```
@@ -373,6 +378,15 @@ spotify_songs_features %>%
 * The next three box plots are to find out the differences of music attributes between different Music Genres.
 
 * Firstly, the relationship between color and Music Genre is established, and put into the same tibble, call "COLORS". This method allows different Music Genre to be clearly distinguished by different colors, and then the specific characteristic of each Music Genre can be judged from those box plots.
+
+```{r color}
+COLORS <- c("#FFF8A3", "#A9CC8F", 
+            "#B2C8D9", "#BEA37A", 
+            "#F3AA79", "#B5B5A9")
+names(COLORS) = c('latin', 'r&b', 
+                  'edm', 'pop', 
+                  'rap','rock')
+```
 
 ```{r barplot, fig.cap="Average valence by Music Genre", fig.height=3.5}
 ggplot(new_data1, aes(reorder(playlist_genre, valence), y = valence)) + 
