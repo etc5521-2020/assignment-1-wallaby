@@ -3,6 +3,8 @@ title: "Spotify Music Exploratory Data Analysis"
 subtitle: "ETC5521 Assignment 2"
 team: wallaby
 author: 
+  - (Yan Ma)
+  - (Chengzi Ye)
   - Helen Evangelina
   - Rahul Bharadwaj
 date: "`r Sys.Date()`"
@@ -636,11 +638,11 @@ grid.arrange(dance_smooth, loudness_smooth, valence_smooth,
 
 * This leads us to extend the analysis to pursue danceabilty and check which music genre, and artists are in line with this trend. The next analysis pursues our questiton as to what the unique selling point for each selected artist is.
 
-## Music characteristics overtime
+## Music Characteristics Overtime
 
-(put here or on the introduction?)
+* It has been previously discussed about the different music components and the correlation between each, and also `track_popularity`. Another thing that we can look at is the trend of music components overtime. Across the years, more musical instruments and more genres are being introduced, changing our music taste. Therefore, analysing the trend of music components over time is an interesting thing to look at as it would be beneficial to understand how the characteristics of music are changing.
 
-* It has been previously discussed about the different music components and the correlation between each, and also `track_popularity`. Another thing that we can look at is the trend of music components overtime. Across the years, more musical instruments and more genres are being introduced, changing our music taste. Therefore, analysing the trend of music components over time is an interesting thing to look at as it would be beneficial to understand how the characteristics of music are changing. As music evolves, we want to look at how the characteristics evolve. Are the music characteristics in 1957 similar to those in 2019? The trend of music genres has been analysed before, which shows that the trend is changing. Therefore, looking at the trend of music components would broaden the analysis more to see if the components are also changing.
+* As music evolves, we want to look at how the characteristics evolve. Are the music characteristics in 1957 similar to those in 2019? The trend of music genres has been analysed before, which shows that the trend is changing. Therefore, looking at the trend of music components would broaden the analysis more to see if the components are also changing.
 
 ```{r characteristics-mean}
 characteristics_mean <- spotify_songs %>%
@@ -708,17 +710,17 @@ char_long <- spotify_songs %>%
   ylab("Values")
 ```
 
-To answer the research question "is the music characteristic changing?", we plot the values of the different music components against year, and faceted according to the components. We can see from Figure \@ref(fig:components-trend) that there are some components which are changing over time.
+* To answer the research question "is the music characteristic changing?", we plot the values of the different music components against year, and faceted according to the components. We can see from the figure above that there are some components which are changing over time.
 
-Acousticness, mode, tempo and valence tend to decrease over time, while danceability and energy tend to increase. The decreasing valence indicates that new songs tend to be sadder as more and more unhappy songs are being released every year. "Happiness and brightness in music has declined, while sadness increased in the last 30 years or so" (France-Presse, 2018). Researches have suggested that the usage of positive emotions has declined. However, there is a high variability in valence values which means that there are varying types of songs. The increasing danceability and energy is due to the rising of electronic music. 
+* Acousticness, mode, tempo and valence tend to decrease over time, while danceability and energy tend to increase. The decreasing valence indicates that new songs tend to be sadder as more and more unhappy songs are being released every year. "Happiness and brightness in music has declined, while sadness increased in the last 30 years or so" (France-Presse, 2018). Researches have suggested that the usage of positive emotions has declined. However, there is a high variability in valence values which means that there are varying types of songs. The increasing danceability and energy is due to the rising of electronic music. 
 
-The increasing trend of energy and danceability is showing that the trend is shifting towards a more energetic and upbeat music. This is due to the rising of electronic music and the emergence of more modern music with high energy. The mode tends to get closer to 0.5 overtime, which means a more balanced mode between 0 and 1. Duration is pretty inetersting as it increased until around 1990 but then decreased again post-1990.
+* The increasing trend of energy and danceability is showing that the trend is shifting towards a more energetic and upbeat music. This is due to the rising of electronic music and the emergence of more modern music with high energy. The mode tends to get closer to 0.5 overtime, which means a more balanced mode between 0 and 1. Duration is pretty inetersting as it increased until around 1990 but then decreased again post-1990.
 
-Other music components tend to follow a steady trend overtime. However, looking at instrumentalness, speechiness, liveness, and loudness, there has been more variances along time. Loudness tend to range between -20 to 0 decibels, except for some outliers present where the loudness is really low.
+* Other music components tend to follow a steady trend overtime. However, looking at instrumentalness, speechiness, liveness, and loudness, there has been more variances along time. Loudness tend to range between -20 to 0 decibels, except for some outliers present where the loudness is really low.
 
-The music characteristics might change because of the emergence of new types and more modern music. But is the music characteristic also changing for an artist? It would be interesting to look at the trend to see if one specific artist also has a shift in his music characteristics. Is the same artist making the same kind of music through time?
+* The music characteristics might change because of the emergence of new types and more modern music. But is the music characteristic also changing for an artist? It would be interesting to look at the trend to see if one specific artist also has a shift in his music characteristics. Is the same artist making the same kind of music through time?
 
-To answer this question, we are looking at the top five artists and look at their music characteristics trend over time. We are not using the `track_popularity` to determine the top five artists here as some artists that are in the top five only have songs in a certain year, thus we are not able to compare the music characteristics over time. Therefore, we are using number of `track_name` instead. The following table display the top five aartists:
+* To answer this question, we are looking at the top five artists and look at their music characteristics trend over time. We are not using the `track_popularity` to determine the top five artists here as some artists that are in the top five only have songs in a certain year, thus we are not able to compare the music characteristics over time. Therefore, we are using number of `track_name` instead. The following table display the top five aartists:
 
 ```{r topartists}
 topartists <- spotify_songs %>% 
@@ -727,10 +729,10 @@ topartists <- spotify_songs %>%
   arrange(desc(Total))  
 
 head(topartists, 5) %>%
-  kable()
+  kable() %>% kable_styling(full_width = F)
 ```
-Unlike the other four artists, Queen has a different music timeline. Therefore, for the purpose of having a clearer visualisation, we split Queen with the others.
 
+* Unlike the other four artists, Queen has a different music timeline. Therefore, for the purpose of having a clearer visualisation, we split Queen with the others.
 
 ```{r top4-wrangling}
 top4artists <- spotify_songs %>%
@@ -774,11 +776,11 @@ top4_components %>%
   xlab("Year")
 ```
 
-It can be seen from Figure \@ref(fig:top4-components) that music components of the individual artist shift over time. Some components are pretty volatile. David Guetta, who is in both pop and edm genres, has a huge change in his danceability and energy. He tends to produce more music with lower danceability but higher energy these days. His songs also have lower duration compared to those in the past. The valence of his songs change overtime too - with 2010 and 2011 being the years when he produced more positive songs, and his songs tend to get less positive over the years. Hardwell focuses on edm, which explains the low speechiness. His instrumentalness used to be pretty high in 2013, however it is shifting towards zero over time. Unlike David Guetta, Hardwell tends to produce more positive songs these days.
+* It can be seen from the figure above that music components of the individual artist shift over time. Some components are pretty volatile. David Guetta, who is in both pop and edm genres, has a huge change in his danceability and energy. He tends to produce more music with lower danceability but higher energy these days. His songs also have lower duration compared to those in the past. The valence of his songs change overtime too - with 2010 and 2011 being the years when he produced more positive songs, and his songs tend to get less positive over the years. Hardwell focuses on edm, which explains the low speechiness. His instrumentalness used to be pretty high in 2013, however it is shifting towards zero over time. Unlike David Guetta, Hardwell tends to produce more positive songs these days.
 
-Being a rapper, it makes sense that Logic has a very close to zero instrumentalness. The trend of key component in his music follows a decreasing trend over time. The valence, acousticness, and liveness of his songs are pretty volatile over time. One inetersting thing about Hardwell is that his danceability and tempo were decreasing in around 2016, indicating that he produced less upbeat and slower tempo music in this year. After 2016, his danceability and tempo are increasing again. Martin Garrix is an edm artist. He has a decreasing energy, loudness and duration over time. In 2013 and 2014, he produced music with a relatively high instrumentalness, however it dropped down across the years. Similar to Hardwell, Martin Garric creates more positive songs along the years - indicated by the increasing valence.
+* Being a rapper, it makes sense that Logic has a very close to zero instrumentalness. The trend of key component in his music follows a decreasing trend over time. The valence, acousticness, and liveness of his songs are pretty volatile over time. One inetersting thing about Hardwell is that his danceability and tempo were decreasing in around 2016, indicating that he produced less upbeat and slower tempo music in this year. After 2016, his danceability and tempo are increasing again. Martin Garrix is an edm artist. He has a decreasing energy, loudness and duration over time. In 2013 and 2014, he produced music with a relatively high instrumentalness, however it dropped down across the years. Similar to Hardwell, Martin Garric creates more positive songs along the years - indicated by the increasing valence.
 
-A clear thing to notice here is that all of them have a relatively low speechiness as they are all in either edm or rap genre. The most volatile component of all is mode.
+* A clear thing to notice here is that all of them have a relatively low speechiness as they are all in either edm or rap genre. The most volatile component of all is mode.
 
 ```{r queen-wrangling}
 queen <- spotify_songs %>%
@@ -821,9 +823,9 @@ queen_components %>%
   xlab("Year")
 ```
 
-Figure \@ref(fig:queen-trend) is showing the music components of Queen's songs over time. And here we can see that the music characteristics evolve overtime. Queen is a rock band, hence explains the relatively high energy level. A very interesting thing here is that the danceability, energy, liveness, loudness, and speechiness are all dropping in 1992, while the acousticness is increasing sharply compared to the years before. This is due to Queen only produced one song in 1992 - the popular "We Are The Champions". This song is pretty different compared to other songs Queen produced as this song has less energy and less danceable. 
+* The figure above is showing the music components of Queen's songs over time. And here we can see that the music characteristics evolve overtime. Queen is a rock band, hence explains the relatively high energy level. A very interesting thing here is that the danceability, energy, liveness, loudness, and speechiness are all dropping in 1992, while the acousticness is increasing sharply compared to the years before. This is due to Queen only produced one song in 1992 - the popular "We Are The Champions". This song is pretty different compared to other songs Queen produced as this song has less energy and less danceable. 
 
-It can be concluded that the music characteristics evolve over time. And despite the changes, each artist has their own uniqueness in terms of the music they produce.
+* It can be concluded that the music characteristics evolve over time. And despite the changes, each artist has their own uniqueness in terms of the music they produce.
 
 ## Unique Features of Artists
 
