@@ -4,7 +4,7 @@ subtitle: "ETC5521 Assignment 2"
 team: wallaby
 author: 
   - (Yan Ma)
-  - (Chengzi Ye)
+  - (Chengzhi Ye)
   - Helen Evangelina
   - Rahul Bharadwaj
 date: "`r Sys.Date()`"
@@ -38,6 +38,7 @@ library(ggthemes)
 library(spotifyr)
 library(ggridges)
 library(visdat)
+library(plotly)
 ```
 
 [This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
@@ -52,7 +53,7 @@ In ancient times, when the court held a banquet, or some talented people visited
 
 Spotify is a legitimate streaming music service platform, which has been supported by Warner Music, Sony, EMI and other major record companies around the world. Now it has more than 60 million users, and it is the world's leading large-scale online streaming music playing platform.
 
-Because Spotify contains a large number of users' data, four users who are very interested in it, Charlie Thompson, Josiah parry, Donal Phipps, and Tom Wolff decided to make it easier for everyone to know their own preferences or the mainstream of most people's listening to songs through spotify's API, thus creating Spotifyr package. In addition to Spotify package, our data is also mixed with blog post data created by Kaylin Pavlik. Six main categories (EDM, Latin, pop, R&B, rap, rock) are used to classify 5000 songs. The combination of the two data has a great effect on the study of the popularity of pop music. One of the limitations of the dataset as we observed is that it has some duplicate `track_names` in the data and this needed to be cleaned for an effective analysis. The `track_artist` column has some values that makes no sense and would affect operations involving the count of artists.
+Because Spotify contains a large number of users' data, four users who are very interested in it, Charlie Thompson, Josiah parry, Donal Phipps, and Tom Wolff decided to make it easier for everyone to know their own preferences or the mainstream of most people's listening to songs through spotify's API, thus creating Spotifyr package. In addition to Spotify package, our data is also mixed with blog post data created by Kaylin Pavlik. Six main categories (EDM, Latin, pop, R&B, rap, rock) are used to classify 5000 songs. The combination of the two data has a great effect on the study of the popularity of pop music. One of the limitations of the dataset as we observed is that it has some duplicated `track_names` in the data and this would affect the analysis of number of track names if not carefully looked at. The `track_artist` column has some values that make no sense as they have  improper naming, which would affect the analysis.
 
 Nowadays, music plays an important role in people's life. It plays an indispensable role in helping people manage and improve their quality of life. As fans of music, we not only enjoy music, but also wonder how music strikes people's hearts with simple tones, rhythms, timbres and words. How popular is each genre? How much influence does the genre, or the various attributes of songs, have on music popularity? Does it makes us dance or sing unconsciously, or does it convey our emotions and implicate our thoughts? The curiosity behind all these questions drives the purpose of this analysis.
 
@@ -704,10 +705,12 @@ char_long <- spotify_songs %>%
                 y = mean),
                 color = "red") +
   facet_wrap(~components, scales = "free") +
-   theme(legend.position = "none") +
+   theme(legend.position = "none",
+         axis.text = element_text(size = 7)) +
    ggtitle("Trend of Music Components Overtime") +
   xlab("Year") +
-  ylab("Values")
+  ylab("Values") 
+ggplotly()
 ```
 
 * To answer the research question "is the music characteristic changing?", we plot the values of the different music components against year, and faceted according to the components. We can see from the figure above that there are some components which are changing over time.
