@@ -74,11 +74,11 @@ Questions Added to enhance the scope of the analysis:
 
 4. Explore the music characteristics over time - is the music characteristic changing?
 
+* Exploring how the music characteristics change over time could enhance the primary analysis of audio features. This question is a good addition to the scope of the analysis as rather than just looking at the different audio features, we are also looking at how those audio features are changing over time, therefore broadening the analysis. Across the years, music trend and taste have evolved, thus it would be beneficial to look at whether the music components are shifting.
+
 5. What exactly makes artists stand out even when there are artists doing the same kind of music? What is the Unique Selling Point (USP) of a few particular selected artists?
 
-This helps us enhance the scope of the primary analysis and broadens our understanding of the relations between popularity and audio features.
-
-Exploring how the music characteristics change over time could enhance the primary analysis of audio features. This question is a good addition to the scope of the analysis as rather than just looking at the different audio features, we are also looking at how those audio features are changing over time, therefore broadening the analysis. Across the years, music trend and taste have evolved, thus it would be beneficial to look at whether the music components are shifting.
+* This helps us enhance the scope of the primary analysis and broadens our understanding of the relations between popularity and audio features.
 
 # Data Description
 
