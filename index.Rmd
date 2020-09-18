@@ -38,7 +38,6 @@ library(ggthemes)
 library(spotifyr)
 library(ggridges)
 library(visdat)
-library(plotly)
 ```
 
 [This assignment is for ETC5521 Assignment 1 by Team `r rmarkdown::metadata$team` comprising of `r knitr::combine_words(rmarkdown::metadata$author)`.]{style="color:#006DAE;"}
@@ -78,8 +77,6 @@ Questions Added to enhance the scope of the analysis:
 5. What exactly makes artists stand out even when there are artists doing the same kind of music? What is the Unique Selling Point (USP) of a few particular selected artists?
 
 This helps us enhance the scope of the primary analysis and broadens our understanding of the relations between popularity and audio features.
-
-What audio features are capable of making an impact on the popularity of music artworks and contribute to the emergence of Top Songs?
 
 Exploring how the music characteristics change over time could enhance the primary analysis of audio features. This question is a good addition to the scope of the analysis as rather than just looking at the different audio features, we are also looking at how those audio features are changing over time, therefore broadening the analysis. Across the years, music trend and taste have evolved, thus it would be beneficial to look at whether the music components are shifting.
 
@@ -713,8 +710,7 @@ char_long <- spotify_songs %>%
          axis.text = element_text(size = 7)) +
    ggtitle("Trend of Music Components Overtime") +
   xlab("Year") +
-  ylab("Values") 
-ggplotly()
+  ylab("Values")
 ```
 
 * To answer the research question "is the music characteristic changing?", we plot the values of the different music components against year, and faceted according to the components. We can see from the figure above that there are some components which are changing over time.
@@ -1071,7 +1067,7 @@ grid.arrange(DGD, DGS, DGE, DGI)
 
 * Along with the shifts in music taste and trend, the music characteristics also appear to evolve. Modern music has higher danceability and energy compared to those in the past due to the emergence of more upbeat and more energetic music. Valence decreases over time as the music trend has shifted from happy and bright to sad ones. The are more variabilities of the music components over time. When looking at the top five artists with the most songs, the music characteristic of individual artists also change over time.
 
-* In conclusion, track popularity will pay more attention to the singer's own ability and attitude, rather than audio features. The biggest role of audio features is to reflect the singer's music style, rather than increase popularity.
+* In conclusion, track popularity will pay more attention to the singer's own ability and attitude, rather than audio features. The biggest role of audio features is to reflect the singer's music style, rather than increase popularity. A limitation of this analysis is that we set out to answer the question as to what audio features made artists popular, but couldn't arrive at a solid answer saying some particular feature affects popularity. Instead, we find that each artist is popular for their own audio features, which is an interesting insight and something we didn't seem to know while framing the questions. This is a bonus insight and not a limitation but can be thought so partially due to the fact that we didn't arrive at a comprehensive answer to the original question.
 
 # References
 
